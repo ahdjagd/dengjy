@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript 程序结构 - 条件与循环 - 袁磊</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", Consolas, monospace;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            padding: 30px;
+            color: #e0e0e0;
+        }
+        .header { text-align: center; margin-bottom: 30px; color: #fff; }
+        .header h1 { font-size: 36px; margin-bottom: 10px; text-shadow: 2px 2px 8px rgba(0,0,0,0.5); }
+        .header p { font-size: 18px; opacity: 0.9; }
+        .author {
+            display: inline-block; margin-top: 15px; padding: 8px 24px;
+            background: rgba(255,255,255,0.15); border-radius: 25px; font-size: 16px;
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);
+        }
+        .grid {
+            max-width: 1200px; margin: 0 auto;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+        }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px; padding: 20px; backdrop-filter: blur(10px);
+        }
+        .card h2 {
+            font-size: 20px; margin-bottom: 12px;
+            color: #ffd700; border-left: 4px solid #ffd700; padding-left: 10px;
+        }
+        .card h2 .tag {
+            display: inline-block; font-size: 12px; padding: 2px 8px; margin-left: 8px;
+            background: #ffd700; color: #1a1a2e; border-radius: 10px; vertical-align: middle;
+        }
+        pre {
+            background: #1a1a2e; border-radius: 8px; padding: 14px; overflow-x: auto;
+            font-size: 13px; line-height: 1.6; color: #a5d6a7; border: 1px solid #333;
+        }
+        .keyword { color: #c792ea; }
+        .string { color: #c3e88d; }
+        .number { color: #f78c6c; }
+        .comment { color: #546e7a; font-style: italic; }
+        .controls { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        input[type="number"], input[type="text"], select {
+            background: #1a1a2e; border: 1px solid #555; color: #e0e0e0;
+            padding: 6px 10px; border-radius: 6px; font-family: inherit; font-size: 14px; width: 120px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none;
+            padding: 7px 18px; border-radius: 6px; cursor: pointer; font-family: inherit;
+            font-size: 14px; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+        .output {
+            margin-top: 12px; background: #0d0d1a; border-radius: 8px; padding: 12px;
+            min-height: 40px; font-size: 13px; line-height: 1.7; color: #80cbc4;
+            border: 1px dashed #555; white-space: pre-wrap; font-family: Consolas, monospace;
+        }
+        .output.error { color: #ff8a80; }
+        .output.success { color: #b9f6ca; }
+        .pattern-demo { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 10px; }
+        .pattern-demo span {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 28px; height: 28px; border-radius: 4px; font-size: 13px;
+            background: #1a1a2e; border: 1px solid #444;
+        }
+        .pattern-demo span.star { background: #ffd700; color: #1a1a2e; font-weight: bold; border-color: #ffd700; }
+        .pattern-demo span.space { visibility: hidden; }
+        @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>💻 JavaScript 程序结构</h1>
+        <p>条件语句 + 循环语句 —— 交互式演示</p>
+        <span class="author">作者：袁磊</span>
+    </div>
+
+    <div class="grid">
+        <!-- 1. if / else if / else -->
+        <div class="card">
+            <h2>if / else if / else <span class="tag">条件判断</span></h2>
+<pre><span class="keyword">function</span> grade(score) {
+    <span class="keyword">if</span> (score >= <span class="number">90</span>) <span class="keyword">return</span> <span class="string">'A 优秀'</span>;
+    <span class="keyword">else if</span> (score >= <span class="number">80</span>) <span class="keyword">return</span> <span class="string">'B 良好'</span>;
+    <span class="keyword">else if</span> (score >= <span class="number">70</span>) <span class="keyword">return</span> <span class="string">'C 中等'</span>;
+    <span class="keyword">else if</span> (score >= <span class="number">60</span>) <span class="keyword">return</span> <span class="string">'D 及格'</span>;
+    <span class="keyword">else</span> <span class="keyword">return</span> <span class="string">'F 不及格'</span>;
+}</pre>
+            <div class="controls">
+                <input type="number" id="scoreInput" value="85" min="0" max="100">
+                <button onclick="runIfElse()">判定成绩</button>
+            </div>
+            <div class="output" id="ifOutput">等待运行…</div>
+        </div>
+
+        <!-- 2. switch -->
+        <div class="card">
+            <h2>switch <span class="tag">多分支选择</span></h2>
+<pre><span class="keyword">function</span> weekday(day) {
+    <span class="keyword">switch</span> (day) {
+        <span class="keyword">case</span> <span class="number">1</span>: <span class="keyword">return</span> <span class="string">'星期一'</span>;
+        <span class="keyword">case</span> <span class="number">2</span>: <span class="keyword">return</span> <span class="string">'星期二'</span>;
+        <span class="keyword">case</span> <span class="number">3</span>: <span class="keyword">return</span> <span class="string">'星期三'</span>;
+        <span class="keyword">case</span> <span class="number">4</span>: <span class="keyword">return</span> <span class="string">'星期四'</span>;
+        <span class="keyword">case</span> <span class="number">5</span>: <span class="keyword">return</span> <span class="string">'星期五'</span>;
+        <span class="keyword">default</span>: <span class="keyword">return</span> <span class="string">'周末啦 🎉'</span>;
+    }
+}</pre>
+            <div class="controls">
+                <input type="number" id="dayInput" value="3" min="1" max="7">
+                <button onclick="runSwitch()">查询星期</button>
+            </div>
+            <div class="output" id="switchOutput">等待运行…</div>
+        </div>
+
+        <!-- 3. for 循环 -->
+        <div class="card">
+            <h2>for 循环 <span class="tag">计数循环</span></h2>
+<pre><span class="keyword">let</span> sum = <span class="number">0</span>;
+<span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">1</span>; i <= <span class="number">100</span>; i++) {
+    sum += i;
+}
+<span class="comment">// 累加 1+2+...+100</span></pre>
+            <div class="controls">
+                <button onclick="runForSum()">1~100 求和</button>
+                <button onclick="runForEven()">1~50 偶数</button>
+            </div>
+            <div class="output" id="forOutput">等待运行…</div>
+        </div>
+
+        <!-- 4. while / do-while -->
+        <div class="card">
+            <h2>while / do-while <span class="tag">条件循环</span></h2>
+<pre><span class="comment">// while：先判断后执行</span>
+<span class="keyword">let</span> n = <span class="number">1</span>, fact = <span class="number">1</span>;
+<span class="keyword">while</span> (n <= <span class="number">10</span>) {
+    fact *= n; n++;
+}
+
+<span class="comment">// do-while：至少执行一次</span>
+<span class="keyword">let</span> count = <span class="number">0</span>;
+<span class="keyword">do</span> {
+    count++;
+} <span class="keyword">while</span> (count < <span class="number">5</span>);</pre>
+            <div class="controls">
+                <button onclick="runWhile()">10! 阶乘</button>
+                <button onclick="runDoWhile()">数到 5</button>
+            </div>
+            <div class="output" id="whileOutput">等待运行…</div>
+        </div>
+
+        <!-- 5. for...of 遍历数组 -->
+        <div class="card">
+            <h2>for...of <span class="tag">遍历数组</span></h2>
+<pre><span class="keyword">const</span> fruits = [<span class="string">'🍎'</span>, <span class="string">'🍌'</span>, <span class="string">'🍇'</span>, <span class="string">'🍓'</span>, <span class="string">'🥝'</span>];
+<span class="keyword">for</span> (<span class="keyword">const</span> fruit <span class="keyword">of</span> fruits) {
+    console.log(fruit);
+}</pre>
+            <div class="controls">
+                <button onclick="runForOf()">遍历水果</button>
+                <button onclick="runForIn()">遍历对象</button>
+            </div>
+            <div class="output" id="forofOutput">等待运行…</div>
+        </div>
+
+        <!-- 6. 嵌套循环 -->
+        <div class="card">
+            <h2>嵌套 for 循环 <span class="tag">九九乘法表</span></h2>
+<pre><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">1</span>; i <= <span class="number">9</span>; i++) {
+    <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">1</span>; j <= i; j++) {
+        process.stdout.write(
+            j + <span class="string">'×'</span> + i + <span class="string">'='</span> + (i*j) + <span class="string">'\t'</span>
+        );
+    }
+    console.log();
+}</pre>
+            <div class="controls">
+                <button onclick="runTimesTable()">打印九九表</button>
+                <button onclick="runTriangle()">星号三角形</button>
+            </div>
+            <div class="output" id="nestedOutput">等待运行…</div>
+        </div>
+    </div>
+
+    <script>
+        // 1. if / else if / else
+        function runIfElse() {
+            const score = parseInt(document.getElementById('scoreInput').value);
+            if (isNaN(score) || score < 0 || score > 100) {
+                document.getElementById('ifOutput').textContent = '⚠️ 请输入 0~100 的分数';
+                document.getElementById('ifOutput').className = 'output error';
+                return;
+            }
+            let grade;
+            if (score >= 90) grade = 'A 优秀 🌟';
+            else if (score >= 80) grade = 'B 良好 👍';
+            else if (score >= 70) grade = 'C 中等 🙂';
+            else if (score >= 60) grade = 'D 及格 😅';
+            else grade = 'F 不及格 😢';
+            document.getElementById('ifOutput').textContent = score + ' 分 → ' + grade;
+            document.getElementById('ifOutput').className = 'output success';
+        }
+
+        // 2. switch
+        function runSwitch() {
+            const day = parseInt(document.getElementById('dayInput').value);
+            let result;
+            switch (day) {
+                case 1: result = '星期一'; break;
+                case 2: result = '星期二'; break;
+                case 3: result = '星期三'; break;
+                case 4: result = '星期四'; break;
+                case 5: result = '星期五'; break;
+                case 6:
+                case 7: result = '周末啦 🎉'; break;
+                default: result = '请输入 1~7';
+            }
+            document.getElementById('switchOutput').textContent = day + ' → ' + result;
+            document.getElementById('switchOutput').className = 'output success';
+        }
+
+        // 3. for 循环
+        function runForSum() {
+            let sum = 0;
+            for (let i = 1; i <= 100; i++) sum += i;
+            document.getElementById('forOutput').textContent =
+                '1 + 2 + ... + 100 = ' + sum + '\n（循环了 100 次）';
+            document.getElementById('forOutput').className = 'output success';
+        }
+        function runForEven() {
+            let evens = [];
+            for (let i = 2; i <= 50; i += 2) evens.push(i);
+            document.getElementById('forOutput').textContent =
+                '1~50 的偶数: ' + evens.join(', ') + '\n共 ' + evens.length + ' 个';
+            document.getElementById('forOutput').className = 'output success';
+        }
+
+        // 4. while / do-while
+        function runWhile() {
+            let n = 1, fact = 1;
+            while (n <= 10) { fact *= n; n++; }
+            document.getElementById('whileOutput').textContent =
+                '10! = 1 × 2 × ... × 10 = ' + fact;
+            document.getElementById('whileOutput').className = 'output success';
+        }
+        function runDoWhile() {
+            let count = 0, steps = [];
+            do { steps.push(count + 1); count++; } while (count < 5);
+            document.getElementById('whileOutput').textContent =
+                'do-while 执行顺序: ' + steps.join(' → ') + '\n（至少执行一次）';
+            document.getElementById('whileOutput').className = 'output success';
+        }
+
+        // 5. for...of / for...in
+        function runForOf() {
+            const fruits = ['🍎 苹果', '🍌 香蕉', '🍇 葡萄', '🍓 草莓', '🥝 猕猴桃'];
+            let lines = [];
+            for (const fruit of fruits) {
+                lines.push('👉 ' + fruit);
+            }
+            document.getElementById('forofOutput').textContent =
+                '共 ' + fruits.length + ' 个元素:\n' + lines.join('\n');
+            document.getElementById('forofOutput').className = 'output success';
+        }
+        function runForIn() {
+            const student = { name: '袁磊', age: 20, major: '网页设计', grade: 'A' };
+            let lines = [];
+            for (const key in student) {
+                lines.push('  ' + key + ': ' + student[key]);
+            }
+            document.getElementById('forofOutput').textContent =
+                '遍历对象属性:\n' + lines.join('\n');
+            document.getElementById('forofOutput').className = 'output success';
+        }
+
+        // 6. 嵌套循环
+        function runTimesTable() {
+            let html = '';
+            for (let i = 1; i <= 9; i++) {
+                let row = [];
+                for (let j = 1; j <= i; j++) {
+                    row.push(j + '×' + i + '=' + (i * j));
+                }
+                html += row.join('\t') + '\n';
+            }
+            document.getElementById('nestedOutput').textContent = html;
+            document.getElementById('nestedOutput').className = 'output success';
+        }
+        function runTriangle() {
+            const demo = document.getElementById('nestedOutput');
+            demo.innerHTML = '';
+            const rows = 5;
+            for (let i = 1; i <= rows; i++) {
+                const row = document.createElement('div');
+                for (let j = 0; j < rows - i; j++) {
+                    const s = document.createElement('span');
+                    s.className = 'space'; s.textContent = '·';
+                    row.appendChild(s);
+                }
+                for (let j = 0; j < 2 * i - 1; j++) {
+                    const s = document.createElement('span');
+                    s.className = 'star'; s.textContent = '*';
+                    row.appendChild(s);
+                }
+                demo.appendChild(row);
+            }
+            demo.className = 'output success';
+            demo.classList.add('pattern-demo');
+        }
+    </script>
+</body>
+</html>
