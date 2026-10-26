@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="袁磊的风景图片幻灯片展示。">
+    <title>10-2 图片幻灯片 · 袁磊</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #23312d;
+            --muted: #6b7770;
+            --paper: #f3f4ed;
+            --green: #386b55;
+            --line: #d9ded5;
+            --white: #fff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-width: 320px;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--ink);
+            background:
+                radial-gradient(ellipse at 8% 8%, rgba(242, 193, 78, 0.18), transparent 24rem),
+                var(--paper);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            line-height: 1.65;
+        }
+
+        main {
+            width: min(920px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 44px 0 64px;
+        }
+
+        .topline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 28px;
+            color: var(--green);
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+        }
+
+        .topline a {
+            color: inherit;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 4px;
+        }
+
+        .kicker {
+            margin: 0 0 7px;
+            color: var(--green);
+            font-size: 0.84rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+        }
+
+        h1,
+        h2,
+        p {
+            margin-top: 0;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+            font-family: Georgia, "Songti SC", serif;
+            font-size: clamp(2rem, 5vw, 3.3rem);
+            font-weight: 400;
+            line-height: 1.15;
+        }
+
+        .intro {
+            margin-bottom: 25px;
+            color: var(--muted);
+        }
+
+        .color-section {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(180px, 0.6fr);
+            align-items: center;
+            gap: 28px;
+            margin-top: 36px;
+            padding: 24px;
+            border-top: 1px solid var(--line);
+        }
+
+        .color-section h2 {
+            margin-bottom: 6px;
+            font-size: 1.2rem;
+        }
+
+        .color-section p {
+            margin-bottom: 0;
+            color: var(--muted);
+        }
+
+        .color-stage {
+            display: grid;
+            min-height: 190px;
+            place-items: center;
+            overflow: hidden;
+            background: #e7ebe4;
+        }
+
+        .animated-box {
+            display: grid;
+            width: 104px;
+            aspect-ratio: 1;
+            place-items: center;
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 10px 24px rgba(35, 49, 45, 0.2);
+            animation: color-cycle 8s infinite linear, box-bob 2.4s infinite ease-in-out alternate;
+        }
+
+        @keyframes color-cycle {
+            0%, 100% { background-color: #e45d4e; }
+            25% { background-color: #e9ad3b; }
+            50% { background-color: #4e9b70; }
+            75% { background-color: #397eae; }
+        }
+
+        @keyframes box-bob {
+            from { transform: translateY(-10px) rotate(-5deg); }
+            to { transform: translateY(10px) rotate(5deg); }
+        }
+
+        .slideshow {
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--white);
+            box-shadow: 0 18px 48px rgba(35, 49, 45, 0.1);
+        }
+
+        .slide-image-wrap {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 16 / 9;
+            background: #dce3dc;
+        }
+
+        .slide-image {
+            position: absolute;
+            inset: 0;
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slide-image.enter-from-right {
+            animation: enter-from-right 520ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+        }
+
+        .slide-image.enter-from-left {
+            animation: enter-from-left 520ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+        }
+
+        .slide-image.leaving-left,
+        .slide-image.leaving-right {
+            z-index: 2;
+            animation-duration: 520ms;
+            animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+            animation-fill-mode: both;
+        }
+
+        .slide-image.leaving-left {
+            animation-name: leave-left;
+        }
+
+        .slide-image.leaving-right {
+            animation-name: leave-right;
+        }
+
+        @keyframes enter-from-right {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        @keyframes enter-from-left {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+
+        @keyframes leave-left {
+            to { transform: translateX(-100%); }
+        }
+
+        @keyframes leave-right {
+            to { transform: translateX(100%); }
+        }
+
+        .slide-overlay {
+            position: absolute;
+            z-index: 3;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            padding: 12px 20px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.68);
+            font-weight: 700;
+        }
+
+        .arrow {
+            position: absolute;
+            top: 50%;
+            display: grid;
+            width: 44px;
+            height: 44px;
+            place-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.72);
+            border-radius: 50%;
+            color: var(--ink);
+            background: rgba(255, 255, 255, 0.88);
+            font-size: 1.45rem;
+            line-height: 1;
+            cursor: pointer;
+            transform: translateY(-50%);
+            transition: background-color 160ms ease, transform 160ms ease;
+        }
+
+        .arrow:hover {
+            background: var(--white);
+            transform: translateY(-50%) scale(1.06);
+        }
+
+        .arrow:focus-visible,
+        .dot:focus-visible,
+        .topline a:focus-visible {
+            outline: 3px solid #e49a54;
+            outline-offset: 3px;
+        }
+
+        .previous {
+            left: 16px;
+        }
+
+        .next {
+            right: 16px;
+        }
+
+        .caption {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 22px 26px 24px;
+        }
+
+        .caption-copy {
+            max-width: 620px;
+        }
+
+        .caption h2 {
+            margin-bottom: 5px;
+            font-size: 1.35rem;
+        }
+
+        .caption p {
+            margin-bottom: 0;
+            color: var(--muted);
+        }
+
+        .counter {
+            flex: 0 0 auto;
+            color: var(--green);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 1.05rem;
+            white-space: nowrap;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 0 16px 20px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            padding: 0;
+            border: 0;
+            border-radius: 50%;
+            background: #c6cec5;
+            cursor: pointer;
+            transition: background-color 180ms ease, transform 180ms ease;
+        }
+
+        .dot[aria-current="true"] {
+            background: var(--green);
+            transform: scale(1.25);
+        }
+
+        .byline {
+            margin: 18px 0 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+            text-align: right;
+        }
+
+        @media (max-width: 640px) {
+            .color-section {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                padding-inline: 8px;
+            }
+        }
+
+        @media (max-width: 560px) {
+            main {
+                width: min(100% - 24px, 920px);
+                padding-top: 26px;
+            }
+
+            .topline {
+                margin-bottom: 22px;
+            }
+
+            .caption {
+                align-items: start;
+                padding: 18px 18px 20px;
+            }
+
+            .caption h2 {
+                font-size: 1.15rem;
+            }
+
+            .arrow {
+                width: 38px;
+                height: 38px;
+            }
+
+            .previous {
+                left: 10px;
+            }
+
+            .next {
+                right: 10px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="topline">
+            <span>10-2 / IMAGE SLIDESHOW</span>
+            <a href="index.html">返回作品目录</a>
+        </div>
+
+        <header>
+            <p class="kicker">袁磊 · 图片练习</p>
+            <h1>沿途风景与 CSS 动画</h1>
+            <p class="intro">幻灯片使用 CSS 位置动画切换，下方盒子用纯 CSS animation 循环呈现四种颜色。</p>
+        </header>
+
+        <section class="slideshow" aria-label="风景图片幻灯片" aria-roledescription="轮播图">
+            <div class="slide-image-wrap">
+                <img class="slide-image" src="img/1.jpg" alt="绿树枝叶间的一只小动物">
+                <div class="slide-overlay" aria-hidden="true">袁磊 · 沿途风景</div>
+                <button class="arrow previous" type="button" aria-label="上一张">&#8249;</button>
+                <button class="arrow next" type="button" aria-label="下一张">&#8250;</button>
+            </div>
+            <div class="caption" aria-live="polite">
+                <div class="caption-copy">
+                    <h2>林间来客</h2>
+                    <p>阳光穿过枝叶，森林里出现了一个安静的身影。</p>
+                </div>
+                <span class="counter">01 / 03</span>
+            </div>
+            <div class="controls" aria-label="选择幻灯片">
+                <button class="dot" type="button" aria-label="第 1 张" aria-current="true"></button>
+                <button class="dot" type="button" aria-label="第 2 张" aria-current="false"></button>
+                <button class="dot" type="button" aria-label="第 3 张" aria-current="false"></button>
+            </div>
+        </section>
+
+        <section class="color-section" aria-labelledby="color-title">
+            <div>
+                <h2 id="color-title">纯 CSS 四色循环</h2>
+                <p>背景按红、黄、绿、蓝依次变化；另一个 animation 让盒子轻轻上下浮动。</p>
+            </div>
+            <div class="color-stage"><div class="animated-box">袁磊</div></div>
+        </section>
+
+        <p class="byline">网页制作：袁磊</p>
+    </main>
+
+    <script>
+        const slides = [
+            {
+                image: "img/1.jpg",
+                alt: "绿树枝叶间的一只小动物",
+                title: "林间来客",
+                description: "阳光穿过枝叶，森林里出现了一个安静的身影。"
+            },
+            {
+                image: "img/2.jpg",
+                alt: "阳光照耀下的紫色花田",
+                title: "花田晨光",
+                description: "清晨的阳光落在花田上，紫色花海一直延伸到远处。"
+            },
+            {
+                image: "img/3.jpg",
+                alt: "海浪拍打着海边的岩石拱门",
+                title: "海边岩门",
+                description: "潮水沿着海岸缓缓退去，留下天然形成的岩石拱门。"
+            }
+        ];
+
+        const image = document.querySelector(".slide-image");
+        const imageWrap = document.querySelector(".slide-image-wrap");
+        const title = document.querySelector(".caption h2");
+        const description = document.querySelector(".caption p");
+        const counter = document.querySelector(".counter");
+        const dots = [...document.querySelectorAll(".dot")];
+        const slideshow = document.querySelector(".slideshow");
+        let currentIndex = 0;
+
+        function showSlide(index, direction = "next") {
+            currentIndex = (index + slides.length) % slides.length;
+            const slide = slides[currentIndex];
+            const outgoingImage = image.cloneNode();
+            outgoingImage.alt = "";
+            outgoingImage.setAttribute("aria-hidden", "true");
+            outgoingImage.classList.add(direction === "next" ? "leaving-left" : "leaving-right");
+            outgoingImage.addEventListener("animationend", () => outgoingImage.remove(), { once: true });
+            imageWrap.append(outgoingImage);
+
+            image.src = slide.image;
+            image.alt = slide.alt;
+            image.classList.remove("enter-from-left", "enter-from-right");
+            image.classList.add(direction === "next" ? "enter-from-right" : "enter-from-left");
+            image.addEventListener("animationend", () => {
+                image.classList.remove("enter-from-left", "enter-from-right");
+            }, { once: true });
+            title.textContent = slide.title;
+            description.textContent = slide.description;
+            counter.textContent = `0${currentIndex + 1} / 0${slides.length}`;
+
+            dots.forEach((dot, dotIndex) => {
+                dot.setAttribute("aria-current", String(dotIndex === currentIndex));
+            });
+        }
+
+        document.querySelector(".previous").addEventListener("click", () => showSlide(currentIndex - 1, "previous"));
+        document.querySelector(".next").addEventListener("click", () => showSlide(currentIndex + 1, "next"));
+        dots.forEach((dot, index) => dot.addEventListener("click", () => {
+            showSlide(index, index >= currentIndex ? "next" : "previous");
+        }));
+
+        let autoplay = window.setInterval(() => showSlide(currentIndex + 1, "next"), 5000);
+        slideshow.addEventListener("mouseenter", () => window.clearInterval(autoplay));
+        slideshow.addEventListener("mouseleave", () => {
+            window.clearInterval(autoplay);
+            autoplay = window.setInterval(() => showSlide(currentIndex + 1, "next"), 5000);
+        });
+        slideshow.addEventListener("focusin", () => window.clearInterval(autoplay));
+        slideshow.addEventListener("focusout", () => {
+            window.clearInterval(autoplay);
+            autoplay = window.setInterval(() => showSlide(currentIndex + 1, "next"), 5000);
+        });
+    </script>
+</body>
+</html>

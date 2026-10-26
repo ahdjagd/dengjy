@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>transition 过渡</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;   /* 防止 width + padding 撑破布局 */
+        }
+        img {
+            display: block;
+            width: 100%;
+        }
+        ul, ol {                       /* ✅ 字母 l */
+            list-style: none;
+        }
+        .tlist {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .tlist li {                    /* ✅ 样式给 li，不是容器 */
+            width: 30%;
+            margin: 3px;
+            flex-grow: 1;
+            overflow: hidden;
+            position: relative;
+        }
+        .tlist img {
+            width: 100%;
+            transition: transform 0.5s ease;   /* 只对 transform 过渡更清晰 */
+        }
+        /* ✅ 每个 li 都缩放，去掉 3n+1 */
+        .tlist li:hover img {
+            transform: scale(1.7);
+        }
+        .text {
+            width: 100%;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            height: 33px;              /* 默认只显示标题高度 */
+            overflow: hidden;
+            transition: height 0.5s ease;
+        }
+        .text h3 {
+            height: 33px;
+            line-height: 33px;
+            text-align: center;
+        }
+        .text p {
+            padding: 6px 10px;
+            font-size: 12px;
+            line-height: 20px;
+            overflow: hidden;
+            text-indent: 2em;
+        }
+        /* 鼠标移到 li 上时，文字面板展开 */
+        .tlist li:nth-child(3n+1):hover .text {
+            height: 130px;
+        }
+        .tlist li:nth-child(3n+2):hover .text{
+            height:100%;
+        }
+        .tlist li:nth-child(3n):hover  .text{
+            height:83px;
+        }
+    </style>
+</head>
+<body>
+    <h2>transition 过渡</h2>
+    <ul class="tlist">              <!-- ✅ ul，不是 u1 -->
+        <li>
+            <img src="cnm.jpg" alt="">
+            <div class="text">
+                <h3>袁磊的标题1</h3>
+                <p>下面的文字是绝对定位，p元素默认隐藏，只显示h3，当鼠标hover的时候，会有动画效果。</p>
+            </div>
+        </li>
+        <li>
+            <img src="qnmd.jpg" alt="">
+            <div class="text">
+                <h3>袁磊的标题2</h3>
+                <p>下面的文字是绝对定位，p元素默认隐藏，只显示h3，当鼠标hover的时候，会有动画效果。</p>
+            </div>
+        </li>
+        <li>
+            <img src="nmsl.jpg" alt="">
+            <div class="text">
+                <h3>袁磊的标题1</h3>
+                <p>下面的文字是绝对定位，p元素默认隐藏，只显示h3，当鼠标hover的时候，会有动画效果。</p>
+            </div>
+        </li>
+        <li>
+            <img src="cnm.jpg" alt="">
+            <div class="text">
+                <h3>袁磊的标题1</h3>
+                <p>下面的文字是绝对定位，p元素默认隐藏，只显示h3，当鼠标hover的时候，会有动画效果。</p>
+            </div>
+        </li>
+        <li>
+            <img src="cnm.jpg" alt="">
+            <div class="text">
+                <h3>袁磊的标题1</h3>
+                <p>下面的文字是绝对定位，p元素默认隐藏，只显示h3，当鼠标hover的时候，会有动画效果。</p>
+            </div>
+        </li>
+        <li>
+            <img src="cnm.jpg" alt="">
+            <div class="text">
+                <h3>袁磊的标题1</h3>
+                <p>下面的文字是绝对定位，p元素默认隐藏，只显示h3，当鼠标hover的时候，会有动画效果。</p>
+            </div>
+        </li>
+    </ul>
+</body>
+</html>

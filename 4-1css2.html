@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS群组选择器和后代选择器 · 完善效果</title>
+    <style>
+        /* 重置基础边距，保证布局干净 */
+        h2, h3, p {
+            padding: 0;
+            margin: 0;
+        }
+
+        /* ---- 要求2: h2黑底白字 ---- */
+        h2 {
+            background-color: black;
+            color: white;
+            /* 可选微调：让标题更舒适 */
+            padding: 8px 12px;
+            font-size: 20px;
+            letter-spacing: 2px;
+        }
+
+        /* 外层容器样式 */
+        #box {
+            padding: 20px;
+            margin: 20px;
+            border: 1px solid #ccc;
+            font-size: 12px;
+        }
+
+        /* 三级标题居中，微调样式（保留原有颜色黑） */
+        #box h3 {
+            font-size: 16px;
+            line-height: 1.5;       /* 修复原空值，给个合理行高 */
+            text-align: center;
+            color: black;
+            letter-spacing: 3px;
+        }
+
+        /* 段落基本样式：灰色文字、首行缩进、行高 */
+        #box > p {
+            color: #666;
+            text-align: justify;    /* 两端对齐，更美观 (原空值修复) */
+            text-indent: 2em;
+            line-height: 150%;
+        }
+
+        /* ---- 要求1: 学号、姓名、班级的值是蓝色加粗，使用1个css选择器 ----
+           值位于文本节点中，无法直接通过元素选中，但可用 ::first-line / 伪元素？ 
+           稳妥方案：包裹 span 并使用一个选择器同时匹配。
+           为了严格符合“1个css选择器”且只作用于学号、姓名、班级的值，
+           我们将这些值分别用 <span class="info-value"> 包裹，然后用一个选择器统一设置。
+        */
+        .info-value {
+            color: blue;
+            font-weight: bold;
+        }
+
+        /* ---- 要求3: 知识点(值)蓝底白字 ---- 
+           同样知识点后的值 "CSS群组选择器和后代选择器" 需蓝底白字。
+           使用一个独立的选择器 .knowledge-tag 来设置。
+        */
+        .knowledge-tag {
+            background-color: blue;
+            color: white;
+            /* 轻微内边距使背景更明显，不影响布局 */
+            padding: 2px 6px;
+            border-radius: 4px;       /* 可选美观 */
+            font-weight: normal;      /* 如果不想加粗则保持正常，但背景醒目 */
+            display: inline-block;    /* 让背景仅包裹文本 */
+        }
+
+        /* 为保持原结构，链接样式可保留默认，但可微调下划线 */
+        #box a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        #box a:hover {
+            text-decoration: underline;
+        }
+
+        /* 原代码中 #box> 是不完整的，已删除。所有样式以完善后的为准 */
+    </style>
+</head>
+<body>
+    <!-- h2 黑底白字 -->
+    <h2>CSS群组选择器和后代选择器</h2>
+
+    <div id="box">
+        <h3>CSS进阶</h3>
+        <!-- 
+            为了精确控制学号、姓名、班级的值为蓝色加粗，
+            且只用一个CSS选择器，这里使用 span.info-value 包裹对应的值。
+            要求3的知识点值用 span.knowledge-tag 包裹，实现蓝底白字。
+            文本中其他部分保持原有灰色样式。
+        -->
+        <p>
+            学号:<span class="info-value">907</span>,姓名:<span class="info-value">邓嘉毅</span>,班级:<span class="info-value">24009</span>,
+            《高级网页设计》设计的学习难度:一般，
+            本实例的知识点:<span class="knowledge-tag">CSS群组选择器和后代选择器</span>。
+            <a href="#">【更多】</a>
+        </p>
+    </div>
+</body>
+</html>

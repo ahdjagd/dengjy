@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="使用 CSS animation 和 @keyframes 演示盒子背景颜色循环变化。">
+	<title>CSS animation 动画</title>
+	<style>
+		:root {
+			color-scheme: light;
+			--ink: #202d36;
+			--muted: #65747b;
+			--paper: #f4f5ef;
+			--line: #dce2d9;
+			--red: #ef6b5b;
+			--yellow: #f2c14e;
+			--green: #55a87a;
+			--blue: #4387bd;
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			min-width: 320px;
+			min-height: 100vh;
+			margin: 0;
+			color: var(--ink);
+			background:
+				radial-gradient(ellipse at 90% 10%, rgba(85, 168, 122, 0.12), transparent 25rem),
+				var(--paper);
+			font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+			line-height: 1.65;
+		}
+
+		main {
+			width: min(1000px, calc(100% - 40px));
+			margin: 0 auto;
+			padding: 58px 0 70px;
+		}
+
+		.eyebrow {
+			margin: 0 0 8px;
+			color: #397b69;
+			font-size: 0.85rem;
+			font-weight: 700;
+			letter-spacing: 0.12em;
+		}
+
+		h1,
+		h2,
+		p {
+			margin-top: 0;
+		}
+
+		h1 {
+			margin-bottom: 12px;
+			font-family: Georgia, "Songti SC", serif;
+			font-size: clamp(2.2rem, 7vw, 4rem);
+			font-weight: 400;
+			line-height: 1.15;
+		}
+
+		.intro {
+			max-width: 650px;
+			margin-bottom: 34px;
+			color: var(--muted);
+		}
+
+		.demo-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 16px;
+		}
+
+		.demo {
+			min-width: 0;
+			padding: 22px;
+			border: 1px solid var(--line);
+			border-radius: 6px;
+			background: rgba(255, 255, 255, 0.76);
+		}
+
+		.demo h2 {
+			margin-bottom: 4px;
+			font-size: 1.08rem;
+		}
+
+		.demo p {
+			margin-bottom: 18px;
+			color: var(--muted);
+			font-size: 0.9rem;
+		}
+
+		.stage {
+			display: grid;
+			min-height: 190px;
+			place-items: center;
+			overflow: hidden;
+			border-radius: 4px;
+			background-color: #edf0e9;
+		}
+
+		.box {
+			display: grid;
+			width: 112px;
+			aspect-ratio: 1;
+			place-items: center;
+			border-radius: 14px;
+			color: #fff;
+			font-size: 0.88rem;
+			font-weight: 700;
+			box-shadow: 0 12px 24px rgba(32, 45, 54, 0.18);
+			animation: color-cycle 8s infinite;
+		}
+
+		.smooth .box {
+			animation-timing-function: ease-in-out;
+		}
+
+		.steps .box {
+			animation-timing-function: steps(1, end);
+		}
+
+		.move .box {
+			animation-name: color-move;
+			animation-duration: 8s;
+			animation-timing-function: ease-in-out;
+		}
+
+		.spin .box {
+			animation-name: color-spin;
+			animation-duration: 8s;
+			animation-timing-function: ease-in-out;
+		}
+
+		@keyframes color-cycle {
+			0%, 100% { background-color: var(--red); }
+			25% { background-color: var(--yellow); }
+			50% { background-color: var(--green); }
+			75% { background-color: var(--blue); }
+		}
+
+		@keyframes color-move {
+			0%, 100% { background-color: var(--red); transform: translateX(-42px); }
+			25% { background-color: var(--yellow); transform: translateY(-28px); }
+			50% { background-color: var(--green); transform: translateX(42px); }
+			75% { background-color: var(--blue); transform: translateY(28px); }
+		}
+
+		@keyframes color-spin {
+			0%, 100% { background-color: var(--red); transform: rotate(0) scale(1); }
+			25% { background-color: var(--yellow); transform: rotate(90deg) scale(0.82); }
+			50% { background-color: var(--green); transform: rotate(180deg) scale(1); }
+			75% { background-color: var(--blue); transform: rotate(270deg) scale(0.82); }
+		}
+
+		.code-note {
+			margin-top: 18px;
+			padding: 16px 18px;
+			border-left: 3px solid #397b69;
+			background: #e9eee7;
+			color: #42534f;
+			font-size: 0.92rem;
+		}
+
+		code {
+			color: #205f56;
+			font-family: Consolas, "Courier New", monospace;
+		}
+
+		@media (max-width: 640px) {
+			main {
+				padding-top: 36px;
+			}
+
+			.demo-grid {
+				grid-template-columns: 1fr;
+			}
+
+			.demo {
+				padding: 18px;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			*,
+			*::before,
+			*::after {
+				animation-duration: 0.01ms !important;
+				animation-iteration-count: 1 !important;
+			}
+		}
+	</style>
+</head>
+<body>
+	<main>
+		<p class="eyebrow">10-1 / CSS ANIMATION</p>
+		<h1>让颜色动起来</h1>
+		<p class="intro">使用 <code>@keyframes</code> 设置关键帧，让盒子依次呈现红、黄、绿、蓝四种颜色，并循环播放不同的动画效果。</p>
+
+		<section class="demo-grid" aria-label="四种颜色循环动画示例">
+			<article class="demo smooth">
+				<h2>01 · 平滑渐变</h2>
+				<p>颜色连续过渡，节奏均匀。</p>
+				<div class="stage"><div class="box">COLOR</div></div>
+			</article>
+
+			<article class="demo steps">
+				<h2>02 · 分段切换</h2>
+				<p>颜色到达关键帧时立即切换。</p>
+				<div class="stage"><div class="box">COLOR</div></div>
+			</article>
+
+			<article class="demo move">
+				<h2>03 · 颜色与位移</h2>
+				<p>每次变色时，盒子也沿不同方向移动。</p>
+				<div class="stage"><div class="box">MOVE</div></div>
+			</article>
+
+			<article class="demo spin">
+				<h2>04 · 颜色与旋转</h2>
+				<p>旋转和缩放配合四种颜色循环。</p>
+				<div class="stage"><div class="box">SPIN</div></div>
+			</article>
+		</section>
+
+		<p class="code-note"><code>animation: color-cycle 8s infinite;</code> 中的 <code>infinite</code> 表示无限循环；修改关键帧里的 <code>background-color</code>，就能更换循环颜色。</p>
+	</main>
+</body>
+</html>

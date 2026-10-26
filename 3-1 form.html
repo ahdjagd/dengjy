@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>907邓嘉毅</title>
+</head>
+<body>
+    <h2>表单form</h2>
+    <form action="http://huanqiu.com" name="y1">
+        <p>用户名:<input type="text" name="username" placeholder="请输入用户名"></p>
+        <p>密码:<input type="password" name="password" placeholder="请输入密码"></p>
+        <p>性别:
+            <input type="radio" name="sex" value="male" checked>
+            <input type="radio" name="sex" value="female">
+            <input type="radio" name="sex" value="secret">
+        </p> 
+        <p>爱好: 
+            <input type="checkbox" name="hobbies" value="basketball">
+            <input type="checkbox" name="hobbies" value="football">
+            <input type="checkbox" name="hobbies" value="badmintion">
+            <input type="checkbox" name="hobbies" value="tennis">
+        </p>
+        <p>籍贯：
+        <select name="birthplace">
+            <option value="beijing">北京</option>
+            <option value="shanghai">上海</option>
+            <option value="guangzhou">广州</option>
+            <option value="shengzhen">深圳</option>
+        </select>    
+        </p>
+        <p>个人介绍：
+            <textarea name="introduction" cols="30" rows="10" placeholder="请输入个人介绍"></textarea>
+        </p>
+        <p>出生日期：
+            <!-- 这里你留空了，可以加一个日期输入 -->
+            <input type="date" name="birthdate">
+        </p>
+        <p>上传文件:
+            <input type="file" name="files" multiple>
+        </p>
+        <p>
+            <input type="button" value="普通按钮">
+            <input type="button" value="提交按钮">
+            <input type="button" value="重置按钮">
+        </p>
+    </form>
+    <button>按钮</button>
+</body>
+</html>

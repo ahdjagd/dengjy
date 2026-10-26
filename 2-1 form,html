@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>907邓嘉毅</title>
+</head>
+<body>
+    <h2>HTML元素:开始标签+内容+结束标记</h2>
+    <h3>内容与样式相分离-语义性-换行统一用p-</h3>
+    <h4>山居秋暝</h4>
+    空山新雨后,<br>
+    天气晚来秋。<br>
+    <p>明月松间照,</p>
+    <p>清泉石上流。</p>
+    <h4>93阅兵展示的武器列表</h4>
+    <ul>
+        <li>东风</li>
+        <li>鹰击</li>
+        <li>长缨</li>
+        <li>巨浪</li>
+        <li>霹雳</li>
+    </ul>
+    <!--区域，块-->
+     <!--注释：ctrl+/-->
+     <div  style ="background-color:#6810a2;width: 400px;height: 200px;">
+      盒子
+      <div>
+        <!--span是行间元素，可以和其他元素在同一行-->
+        <!--div是块间元素-->
+        <span style="color: #0f9bf8;font-size: 100px">邓</span>
+        <span style="color: #0f9bf8;font-size: 100px">嘉</span>
+         <span style="color: #d50cd8;font-size: 100px">毅</span>
+        <!--扩展：名字的每个不同颜色在同一行-->
+      </div>
+     </div>
+</body>
+</html>

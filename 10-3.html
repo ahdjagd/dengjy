@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="袁磊的 CSS media query 响应式布局练习。">
+    <title>10-3 媒体查询 · 袁磊</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-size: 16px;
+            --ink: #23312d;
+            --paper: #f4f5ef;
+            --green: #386b55;
+            --line: #d9ded5;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-width: 320px;
+            margin: 0;
+            color: var(--ink);
+            background: var(--paper);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            line-height: 1.6;
+        }
+
+        .viewport-stage {
+            display: grid;
+            min-height: 100vh;
+            min-height: 100svh;
+            place-items: center;
+            padding: 32px 24px;
+            background-color: #dcebdc;
+            transition: background-color 250ms ease;
+        }
+
+        .hero-content {
+            width: min(880px, 100%);
+        }
+
+        .eyebrow {
+            margin: 0 0 12px;
+            color: #386b55;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+        }
+
+        h1,
+        h2,
+        p {
+            margin-top: 0;
+        }
+
+        h1 {
+            max-width: 720px;
+            margin-bottom: 16px;
+            font-family: Georgia, "Songti SC", serif;
+            font-size: 2.2rem;
+            font-weight: 400;
+            line-height: 1.12;
+        }
+
+        .hero-content > p:last-child {
+            max-width: 620px;
+            margin-bottom: 0;
+            color: #43554a;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            width: min(1120px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 60px 0 72px;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .section-heading h2 {
+            margin-bottom: 0;
+            font-size: 1.35rem;
+        }
+
+        .section-heading p {
+            margin-bottom: 0;
+            color: #68756d;
+            text-align: right;
+        }
+
+        .box-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .box {
+            display: grid;
+            min-height: 110px;
+            place-items: center;
+            border: 1px solid rgba(35, 49, 45, 0.12);
+            color: #fff;
+            background: #386b55;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 1.7rem;
+        }
+
+        .box:nth-child(3n + 2) {
+            color: var(--ink);
+            background: #e8bb57;
+        }
+
+        .box:nth-child(3n) {
+            background: #397eae;
+        }
+
+        .byline {
+            margin: 24px 0 0;
+            color: #68756d;
+            text-align: right;
+        }
+
+        @media (max-width: 599px) {
+            :root {
+                font-size: 16px;
+            }
+
+            .viewport-stage {
+                background-color: #dcebdc;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .box {
+                font-size: 1.35rem;
+            }
+
+            .box-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (min-width: 600px) and (max-width: 999px) {
+            :root {
+                font-size: 18px;
+            }
+
+            .viewport-stage {
+                background-color: #d9e8ee;
+            }
+
+            h1 {
+                font-size: 2.75rem;
+            }
+
+            .box {
+                font-size: 1.6rem;
+            }
+
+            .box-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+
+        @media (min-width: 1000px) {
+            :root {
+                font-size: 20px;
+            }
+
+            .viewport-stage {
+                background-color: #f0dfc5;
+            }
+
+            h1 {
+                font-size: 3.2rem;
+            }
+
+            .box {
+                font-size: 1.8rem;
+            }
+
+            .box-grid {
+                grid-template-columns: repeat(8, minmax(0, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="viewport-stage">
+        <div class="hero-content">
+            <p class="eyebrow">10-3 / MEDIA QUERY</p>
+            <h1>视口变化，页面也随之变化。</h1>
+            <p>袁磊 · 调整浏览器宽度，观察全屏背景颜色、文字大小和下方盒子排列的变化。</p>
+        </div>
+    </header>
+
+    <main class="content">
+        <div class="section-heading">
+            <h2>响应式盒子</h2>
+            <p>共 8 个盒子 · 根据视口宽度切换每行数量</p>
+        </div>
+        <section class="box-grid" aria-label="八个响应式盒子">
+            <div class="box">01</div>
+            <div class="box">02</div>
+            <div class="box">03</div>
+            <div class="box">04</div>
+            <div class="box">05</div>
+            <div class="box">06</div>
+            <div class="box">07</div>
+            <div class="box">08</div>
+        </section>
+        <p class="byline">网页制作：袁磊</p>
+    </main>
+</body>
+</html>

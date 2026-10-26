@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>907邓嘉毅</title>
+    <style>
+        /* 标签选择器 */
+        h3{
+            color: red;
+        }
+
+        /* id选择器 */
+        #box{
+            width: 500px;
+            height: 500px;
+            background-color: rgba(128, 81, 0, 0.449);
+        }
+
+        /* 类选择器 - 名字颜色 */
+        .n1{
+            color: blue;
+        }
+        .n2{
+            color: aqua;
+        }
+        .n3{
+            color: rgb(225, 255, 0);
+        }
+
+        /* h2 黑底白字 */
+        h2{
+            color: white;
+            background-color: black;
+        }
+
+        /* 新盒子 - 学号 */
+        #box2{
+            width: 300px;
+            height: 150px;
+            background-color: #ff6b6b;
+            /* 让文字居中 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h2>层叠样式表CSS</h2>
+
+    <div id="box">
+        <h3>CSS选择器</h3>
+        <!-- 名字每个字颜色不一样，但在同一行 -->
+        <p>
+            <span class="n1">邓</span>
+            <span class="n2">嘉</span>
+            <span class="n3">毅</span>
+        </p>
+        <!-- "选择器"三个字是白色 -->
+        <p style="color: white;">选择器</p>
+        <p>CSS属性</p>
+    </div>
+
+    <!-- 新盒子：学号 -->
+    <div id="box2">
+        24001010907
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7的倍数盒子 - 袁磊</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 30px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        .author {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 24px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 25px;
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 15px;
+        }
+        .box {
+            aspect-ratio: 1;
+            background: #fff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        .box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        /* 满足规则的空盒子 */
+        .box.empty {
+            background: repeating-linear-gradient(
+                45deg,
+                #ddd,
+                #ddd 10px,
+                #fff 10px,
+                #fff 20px
+            );
+            color: transparent;
+            border: 2px dashed #999;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #fff;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 7的规则挑战</h1>
+        <p>1~100 的数字：7 的倍数或末尾是 7 → 空盒子</p>
+        <span class="author">作者：袁磊</span>
+    </div>
+
+    <div class="container" id="container"></div>
+
+    <div class="footer">
+        规则：数字能被 7 整除，或数字中包含 7（如 17、27、70~79 等）
+    </div>
+
+    <script>
+        const container = document.getElementById('container');
+
+        // 判断是否满足7的规则（严格字面）
+        function isSpecial(num) {
+            // 规则1：7的倍数
+            if (num % 7 === 0) return true;
+            // 规则2：末尾是7
+            if (num % 10 === 7) return true;
+            return false;
+        }
+
+        // 生成100个盒子
+        for (let i = 1; i <= 100; i++) {
+            const box = document.createElement('div');
+            box.className = 'box';
+            if (isSpecial(i)) {
+                box.classList.add('empty');
+                box.title = `${i}：命中7的规则 ✨`;
+            } else {
+                box.textContent = i;
+                box.title = `${i}：普通数字`;
+            }
+            container.appendChild(box);
+        }
+    </script>
+</body>
+</html>
