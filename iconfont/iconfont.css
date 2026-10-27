@@ -1,0 +1,32 @@
+/* iconfont.css - 基于 Font Awesome 6 Free Solid 字体 */
+@font-face {
+  font-family: "iconfont";
+  src: url("./iconfont.woff2") format("woff2"),
+       url("./iconfont.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 1em;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 首页 - home */
+.icon-shouye::before {
+  content: "\f015";
+}
+
+/* 书展 - book */
+.icon-tushu::before {
+  content: "\f02d";
+}
+
+/* 分类 - th (网格) */
+.icon-fenlei::before {
+  content: "\f00a";
+}

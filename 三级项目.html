@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图书展览平台 - 下导航</title>
+  <link rel="stylesheet" href="./iconfont/iconfont.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Microsoft YaHei", sans-serif;
+      background: #f5f5f5;
+      padding-bottom: 70px; /* 给固定下导航留空间 */
+    }
+
+    /* ===== 页面内容示意 ===== */
+    .page-content {
+      padding: 20px;
+    }
+    .page-content h1 {
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 12px;
+    }
+    .page-content p {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.8;
+    }
+
+    /* 上导航用字体图标（与下导航SVG形成技术区别） */
+    .top-nav {
+      display: flex;
+      gap: 24px;
+      padding: 12px 20px;
+      background: #fff;
+      border-bottom: 1px solid #eee;
+    }
+    .top-nav a {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      color: #555;
+      font-size: 14px;
+    }
+    .top-nav .iconfont {
+      font-size: 18px;
+      color: #c0392b;
+    }
+
+    /* ===== 下导航：SVG + Flex 自适应 ===== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      background: #fff;
+      border-top: 1px solid #e0e0e0;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+      z-index: 100;
+    }
+
+    .bottom-nav .nav-item {
+      flex: 1;                 /* 自适应宽度关键 */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 0 6px;
+      text-decoration: none;
+      color: #999;
+      font-size: 12px;
+      transition: color 0.2s;
+    }
+
+    .bottom-nav .nav-item svg {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 3px;
+      fill: currentColor;      /* SVG颜色跟随文字颜色 */
+      transition: fill 0.2s;
+    }
+
+    .bottom-nav .nav-item.active,
+    .bottom-nav .nav-item:hover {
+      color: #c0392b;
+    }
+
+    /* 视口较大时限制导航最大宽度并居中，避免过宽 */
+    @media (min-width: 768px) {
+      .bottom-nav {
+        max-width: 480px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 12px 12px 0 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 上导航：字体图标 -->
+  <nav class="top-nav">
+    <a href="#"><i class="iconfont icon-shouye"></i>首页</a>
+    <a href="#"><i class="iconfont icon-tushu"></i>书展</a>
+    <a href="#"><i class="iconfont icon-fenlei"></i>分类</a>
+  </nav>
+
+  <!-- 页面内容 -->
+  <main class="page-content">
+    <h1>图书展览平台</h1>
+    <p>欢迎来到图书展览平台，这里汇聚了各类优秀图书展览信息。</p>
+    <p>下导航使用 SVG 图标 + Flexbox 实现自适应宽度，上导航使用字体图标，满足实验“技术有区别”的要求。</p>
+  </main>
+
+  <!-- 下导航：SVG 图标 + Flex 自适应 -->
+  <nav class="bottom-nav">
+    <a href="#" class="nav-item active">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/>
+      </svg>
+      <span>首页</span>
+    </a>
+    <a href="#" class="nav-item">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 4h6v16H4V4zm10 0h6v16h-6V4z"/>
+      </svg>
+      <span>书展</span>
+    </a>
+    <a href="#" class="nav-item">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 5h18v2H3V5zm0 4h12v2H3V9zm0 4h18v2H3v-2zm0 4h12v2H3v-2z"/>
+      </svg>
+      <span>分类</span>
+    </a>
+    <a href="#" class="nav-item">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/>
+      </svg>
+      <span>我的</span>
+    </a>
+  </nav>
+
+</body>
+</html>

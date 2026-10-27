@@ -1,4 +1,4 @@
-﻿# update-index.ps1
+﻿﻿# update-index.ps1
 # 自动扫描项目中的所有 .html 文件并重新生成 index.html
 # 用法: powershell -ExecutionPolicy Bypass -File update-index.ps1
 
