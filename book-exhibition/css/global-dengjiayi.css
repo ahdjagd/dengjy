@@ -1,4 +1,5 @@
 /* global-dengjiayi.css - 图书展览平台全局样式 */
+/* 作者：邓嘉毅  学号：24001010907 */
 
 * {
   margin: 0;
@@ -45,6 +46,17 @@ a {
   height: 40px;
   width: 40px;
   object-fit: contain;
+}
+
+.top-nav .student-info {
+  margin-left: 16px;
+  padding: 5px 14px;
+  background: #c0392b;
+  color: #fff;
+  font-size: 13px;
+  border-radius: 20px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
 .top-nav .nav-links {
