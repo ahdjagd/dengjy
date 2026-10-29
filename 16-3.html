@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>分类 - 邓嘉毅 24001010907</title>
+<meta name="author" content="邓嘉毅 24001010907">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f5f5f5;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .category-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px 20px;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 20px;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .row:last-child { border-bottom: none; }
+  .icon {
+    width: 26px;
+    height: 26px;
+    margin-right: 14px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .icon svg { width: 26px; height: 26px; stroke: #999; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .icon.orange svg { stroke: #ff6a00; }
+  .text {
+    font-size: 16px;
+    color: #333;
+    line-height: 1.4;
+  }
+  .text.promo { color: #ff6a00; font-weight: 500; }
+  .sep { color: #ccc; margin: 0 6px; }
+</style>
+</head>
+<body>
+
+<div class="category-card">
+  <div class="title">分类</div>
+
+  <!-- 促销行 -->
+  <div class="row">
+    <div class="icon orange">
+      <svg viewBox="0 0 24 24"><path d="M12 2c1.5 3-2 4-2 7 0 1.5 1 2.5 2 2.5s2-1 2-2.5c1 1 2 2.5 2 4.5A6 6 0 0 1 8 16c0-3 2-5 4-14z"/></svg>
+    </div>
+    <div class="text promo">叠券低至7.2折起<span class="sep">/</span>爆款8.5折起</div>
+  </div>
+
+  <!-- 电脑 -->
+  <div class="row">
+    <div class="icon">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg>
+    </div>
+    <div class="text">电脑<span class="sep">/</span>配件<span class="sep">/</span>办公<span class="sep">/</span>文具</div>
+  </div>
+
+  <!-- 家电 -->
+  <div class="row">
+    <div class="icon">
+      <svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><circle cx="12" cy="14" r="3.5"/><path d="M12 6v.5"/></svg>
+    </div>
+    <div class="text">家电<span class="sep">/</span>手机<span class="sep">/</span>通信<span class="sep">/</span>数码</div>
+  </div>
+
+  <!-- 工业品 -->
+  <div class="row">
+    <div class="icon">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>
+    </div>
+    <div class="text">工业品<span class="sep">/</span>商业<span class="sep">/</span>农业<span class="sep">/</span>定制</div>
+  </div>
+
+  <!-- 家具 -->
+  <div class="row">
+    <div class="icon">
+      <svg viewBox="0 0 24 24"><path d="M3 11V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4M3 11h18v4H3zM5 15v4M19 15v4"/></svg>
+    </div>
+    <div class="text">家具<span class="sep">/</span>家装<span class="sep">/</span>家居<span class="sep">/</span>厨具</div>
+  </div>
+
+  <!-- 女装 -->
+  <div class="row">
+    <div class="icon">
+      <svg viewBox="0 0 24 24"><path d="M9 3h6l2 4-1 2v12H8V9L7 7l2-4z"/></svg>
+    </div>
+    <div class="text">女装<span class="sep">/</span>男装<span class="sep">/</span>内衣<span class="sep">/</span>配饰</div>
+  </div>
+
+  <!-- 女鞋 -->
+  <div class="row">
+    <div class="icon">
+      <svg viewBox="0 0 24 24"><path d="M2 16c2-1 4-1 6 0s4 1 6 0 4-1 6 0v3H2v-3zM2 16c0-3 2-5 5-6 2 1 4 1 6 0"/></svg>
+    </div>
+    <div class="text">女鞋<span class="sep">/</span>男鞋<span class="sep">/</span>运动<span class="sep">/</span>户外</div>
+  </div>
+
+  <!-- 汽车 -->
+  <div class="row">
+    <div class="icon">
+      <svg viewBox="0 0 24 24"><path d="M3 13l2-5h14l2 5M3 13h18v5H3z"/><circle cx="7" cy="18" r="1.5"/><circle cx="17" cy="18" r="1.5"/></svg>
+    </div>
+    <div class="text">汽车<span class="sep">/</span>珠宝<span class="sep">/</span>文玩<span class="sep">/</span>箱包</div>
+  </div>
+
+  <!-- 食品 -->
+  <div class="row">
+    <div class="icon">
+      <svg viewBox="0 0 24 24"><path d="M8 3v8M8 3H6v3a2 2 0 0 0 4 0V3h-2zM8 11v8a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-8H8z"/></svg>
+    </div>
+    <div class="text">食品<span class="sep">/</span>鲜花<span class="sep">/</span>酒水<span class="sep">/</span>健康</div>
+  </div>
+
+  <!-- 母婴 -->
+  <div class="row">
+    <div class="icon">
+      <svg viewBox="0 0 24 24"><path d="M5 3h10l-1 4H6L5 3zM6 7h8l-1 3H7L6 7zM7 10h6l-1 4H8L7 10zM8 14h4l-1 4H9L8 14zM9 18h2v3H9z"/></svg>
+    </div>
+    <div class="text">母婴<span class="sep">/</span>童装<span class="sep">/</span>玩具<span class="sep">/</span>宠物</div>
+  </div>
+</div>
+
+</body>
+</html>
