@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScript 对象与字符串可视化 - 邓嘉毅 24001010907</title>
+<meta name="author" content="邓嘉毅 24001010907">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+  header {
+    text-align: center;
+    padding: 50px 20px 30px;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border-bottom: 3px solid #a78bfa;
+  }
+  header h1 {
+    font-size: 38px;
+    background: linear-gradient(90deg, #a78bfa, #f472b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+  }
+  header p { color: #94a3b8; font-size: 15px; }
+  .author {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 6px 18px;
+    background: #a78bfa;
+    color: #0f172a;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .section-title {
+    max-width: 1100px;
+    margin: 40px auto 16px;
+    padding: 0 20px;
+    font-size: 22px;
+    color: #a78bfa;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::before {
+    content: "";
+    width: 6px;
+    height: 22px;
+    background: #a78bfa;
+    border-radius: 3px;
+  }
+
+  .grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 20px;
+    transition: transform 0.25s, border-color 0.25s;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: #a78bfa;
+  }
+  .card h3 {
+    font-size: 17px;
+    color: #a78bfa;
+    margin-bottom: 6px;
+    font-family: "Consolas", monospace;
+  }
+  .card .desc {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .card .row { margin-bottom: 10px; }
+  .card .label {
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 6px;
+    font-family: "Consolas", monospace;
+  }
+  .box {
+    background: #0f172a;
+    border-radius: 8px;
+    padding: 10px;
+    min-height: 38px;
+    font-family: "Consolas", monospace;
+    font-size: 13px;
+    word-break: break-all;
+  }
+  .obj-box { display: flex; flex-wrap: wrap; gap: 6px; }
+  .kv {
+    background: #334155;
+    color: #e2e8f0;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    animation: pop 0.3s ease;
+  }
+  .kv .k { color: #38bdf8; }
+  .kv .v { color: #fbbf24; }
+  .kv.danger { background: #7f1d1d; }
+  .kv.success { background: #14532d; }
+  .str-box { display: flex; flex-wrap: wrap; gap: 2px; }
+  .ch {
+    background: #334155;
+    color: #e2e8f0;
+    padding: 5px 8px;
+    border-radius: 5px;
+    font-size: 13px;
+    animation: pop 0.3s ease;
+  }
+  .ch.highlight { background: #a78bfa; color: #0f172a; font-weight: bold; }
+  .ch.danger { background: #ef4444; color: #fff; }
+  @keyframes pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .output-text {
+    background: #0f172a;
+    padding: 10px;
+    border-radius: 8px;
+    font-family: "Consolas", monospace;
+    font-size: 13px;
+    color: #f472b6;
+    min-height: 20px;
+    word-break: break-all;
+  }
+  .run-btn {
+    margin-top: 12px;
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(90deg, #a78bfa, #f472b6);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: opacity 0.2s;
+  }
+  .run-btn:hover { opacity: 0.88; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🧩 JavaScript 对象 & 字符串可视化</h1>
+  <p>点击"运行"查看每个方法对对象/字符串的实际效果</p>
+  <span class="author">邓嘉毅 · 24001010907</span>
+</header>
+
+<!-- ===== 对象 ===== -->
+<div class="section-title">对象 Object</div>
+<div class="grid" id="obj-grid"></div>
+
+<!-- ===== 字符串 ===== -->
+<div class="section-title">字符串 String</div>
+<div class="grid" id="str-grid"></div>
+
+<script>
+// 渲染对象为 key-value 徽章
+function renderObj(obj, highlightKey = null, classFn = null) {
+  if (obj === null || typeof obj !== "object") return `<span class="output-text">${JSON.stringify(obj)}</span>`;
+  return Object.entries(obj).map(([k, v]) => {
+    let cls = "kv";
+    if (highlightKey === k) cls += " highlight";
+    if (classFn) cls += " " + (classFn(k, v) || "");
+    return `<span class="${cls}"><span class="k">${k}</span>: <span class="v">${JSON.stringify(v)}</span></span>`;
+  }).join("");
+}
+
+// 渲染字符串为字符盒
+function renderStr(str, highlight = []) {
+  if (typeof str !== "string") return `<span class="output-text">${JSON.stringify(str)}</span>`;
+  return [...str].map((c, i) => {
+    let cls = "ch";
+    if (highlight.includes(i)) cls += " highlight";
+    return `<span class="${cls}">${c === " " ? "␣" : c}</span>`;
+  }).join("");
+}
+
+// ===== 对象方法 =====
+const objMethods = [
+  { name: "创建对象", desc: "三种常见方式：字面量 / Object.create / new Object",
+    fn: () => {
+      const a = { name: "Tom", age: 20 };
+      return { before: {}, after: a, out: "字面量创建，最常用" };
+    } },
+  { name: "点 / 中括号访问", desc: "两种属性访问方式，中括号支持变量和特殊名",
+    fn: () => {
+      const a = { name: "Tom", "user-age": 20 };
+      return { before: a, after: a, out: `a.name = ${a.name} , a['user-age'] = ${a['user-age']}` };
+    } },
+  { name: "新增属性", desc: "直接赋值即可新增属性",
+    fn: () => {
+      const a = { name: "Tom" };
+      a.age = 20; a.gender = "男";
+      return { before: { name: "Tom" }, after: a, out: "新增 age 与 gender" };
+    } },
+  { name: "delete 删除", desc: "delete 关键字删除对象属性",
+    fn: () => {
+      const a = { name: "Tom", age: 20, gender: "男" };
+      delete a.age;
+      return { before: { name: "Tom", age: 20, gender: "男" }, after: a, out: "已删除 age" };
+    } },
+  { name: "Object.keys()", desc: "返回对象所有可枚举属性名组成的数组",
+    fn: () => {
+      const a = { name: "Tom", age: 20, city: "北京" };
+      const r = Object.keys(a);
+      return { before: a, after: a, out: `keys: ${JSON.stringify(r)}` };
+    } },
+  { name: "Object.values()", desc: "返回对象所有属性值组成的数组",
+    fn: () => {
+      const a = { name: "Tom", age: 20, city: "北京" };
+      const r = Object.values(a);
+      return { before: a, after: a, out: `values: ${JSON.stringify(r)}` };
+    } },
+  { name: "Object.entries()", desc: "返回 [key, value] 对的二维数组",
+    fn: () => {
+      const a = { name: "Tom", age: 20 };
+      const r = Object.entries(a);
+      return { before: a, after: a, out: `entries: ${JSON.stringify(r)}` };
+    } },
+  { name: "Object.assign()", desc: "将一个或多个源对象的属性合并到目标对象",
+    fn: () => {
+      const t = { a: 1 };
+      Object.assign(t, { b: 2 }, { c: 3 });
+      return { before: { a: 1 }, after: t, out: "合并 b、c 到目标" };
+    } },
+  { name: "Object.freeze()", desc: "冻结对象，不可增删改属性",
+    fn: () => {
+      const a = { name: "Tom" };
+      Object.freeze(a);
+      a.age = 20; // 严格模式报错，非严格静默失败
+      return { before: { name: "Tom" }, after: a, out: "冻结后 age 未被添加" };
+    } },
+  { name: "in 操作符", desc: "判断属性是否存在于对象或其原型链",
+    fn: () => {
+      const a = { name: "Tom" };
+      const r = "name" in a;
+      return { before: a, after: a, out: `"name" in a = ${r}` };
+    } },
+  { name: "hasOwnProperty()", desc: "判断属性是否为对象自身属性（不含原型链）",
+    fn: () => {
+      const a = { name: "Tom" };
+      const r = a.hasOwnProperty("toString");
+      return { before: a, after: a, out: `hasOwnProperty('toString') = ${r}（继承自原型）` };
+    } },
+  { name: "解构赋值", desc: "从对象中提取属性赋给变量",
+    fn: () => {
+      const a = { name: "Tom", age: 20, city: "北京" };
+      const { name, age } = a;
+      return { before: a, after: a, out: `name=${name}, age=${age}` };
+    } },
+];
+
+// ===== 字符串方法 =====
+const strMethods = [
+  { name: "length", desc: "返回字符串字符个数",
+    fn: () => { const s = "Hello世界"; return { before: s, after: s, out: `长度 = ${s.length}`, hl: [] }; } },
+  { name: "charAt()", desc: "返回指定索引位置的字符",
+    fn: () => { const s = "JavaScript"; const r = s.charAt(4); return { before: s, after: s, out: `charAt(4) = "${r}"`, hl: [4] }; } },
+  { name: "indexOf()", desc: "返回子串首次出现的索引，找不到返回 -1",
+    fn: () => { const s = "hello world"; const r = s.indexOf("world"); return { before: s, after: s, out: `indexOf('world') = ${r}`, hl: [6,7,8,9,10] }; } },
+  { name: "includes()", desc: "判断字符串是否包含某子串",
+    fn: () => { const s = "hello world"; const r = s.includes("world"); return { before: s, after: s, out: `includes('world') = ${r}`, hl: [] }; } },
+  { name: "startsWith / endsWith", desc: "判断是否以某子串开头/结尾",
+    fn: () => { const s = "hello world"; return { before: s, after: s, out: `startsWith('he')=${s.startsWith("he")}, endsWith('ld')=${s.endsWith("ld")}`, hl: [] }; } },
+  { name: "slice()", desc: "截取子串，支持负数索引",
+    fn: () => { const s = "JavaScript"; const r = s.slice(0, 4); return { before: s, after: r, out: "slice(0,4)", hl: [0,1,2,3] }; } },
+  { name: "substring()", desc: "截取子串（不支持负数）",
+    fn: () => { const s = "JavaScript"; const r = s.substring(4); return { before: s, after: r, out: "substring(4)", hl: [4,5,6,7,8,9] }; } },
+  { name: "toUpperCase / toLowerCase", desc: "转换大小写",
+    fn: () => { const s = "Hello"; const r = s.toUpperCase(); return { before: s, after: r, out: "toUpperCase()", hl: [] }; } },
+  { name: "trim()", desc: "去除首尾空白字符",
+    fn: () => { const s = "  hello  "; const r = s.trim(); return { before: s, after: r, out: "trim()", hl: [] }; } },
+  { name: "split()", desc: "按分隔符将字符串拆成数组",
+    fn: () => { const s = "2024-10-27"; const r = s.split("-"); return { before: s, after: s, out: `split('-') = ${JSON.stringify(r)}`, hl: [] }; } },
+  { name: "replace()", desc: "替换匹配的子串（默认只替换第一个）",
+    fn: () => { const s = "hello world hello"; const r = s.replace("hello", "hi"); return { before: s, after: r, out: "replace('hello','hi')", hl: [] }; } },
+  { name: "replaceAll()", desc: "替换所有匹配的子串",
+    fn: () => { const s = "hello world hello"; const r = s.replaceAll("hello", "hi"); return { before: s, after: r, out: "replaceAll('hello','hi')", hl: [] }; } },
+  { name: "concat()", desc: "拼接多个字符串",
+    fn: () => { const s = "Hello"; const r = s.concat(" ", "World", "!"); return { before: s, after: r, out: "concat(' ','World','!')", hl: [] }; } },
+  { name: "repeat()", desc: "重复字符串指定次数",
+    fn: () => { const s = "ab"; const r = s.repeat(3); return { before: s, after: r, out: "repeat(3)", hl: [] }; } },
+  { name: "padStart / padEnd", desc: "在开头/结尾填充到指定长度",
+    fn: () => { const s = "7"; const r = s.padStart(3, "0"); return { before: s, after: r, out: "padStart(3,'0') → 007", hl: [] }; } },
+];
+
+// 渲染对象卡片
+function renderObjCard(m, idx) {
+  return `
+    <div class="card">
+      <h3>${m.name}</h3>
+      <p class="desc">${m.desc}</p>
+      <div class="row"><div class="label">输入 (before)</div><div class="box obj-box" id="obj-before-${idx}"></div></div>
+      <div class="row"><div class="label">结果 (after)</div><div class="box obj-box" id="obj-after-${idx}"></div></div>
+      <div class="output-text" id="obj-out-${idx}">点击下方"运行"查看结果</div>
+      <button class="run-btn" data-type="obj" data-idx="${idx}">▶ 运行</button>
+    </div>`;
+}
+
+// 渲染字符串卡片
+function renderStrCard(m, idx) {
+  return `
+    <div class="card">
+      <h3>${m.name}</h3>
+      <p class="desc">${m.desc}</p>
+      <div class="row"><div class="label">输入 (before)</div><div class="box str-box" id="str-before-${idx}"></div></div>
+      <div class="row"><div class="label">结果 (after)</div><div class="box str-box" id="str-after-${idx}"></div></div>
+      <div class="output-text" id="str-out-${idx}">点击下方"运行"查看结果</div>
+      <button class="run-btn" data-type="str" data-idx="${idx}">▶ 运行</button>
+    </div>`;
+}
+
+document.getElementById("obj-grid").innerHTML = objMethods.map(renderObjCard).join("");
+document.getElementById("str-grid").innerHTML = strMethods.map(renderStrCard).join("");
+
+// 事件委托
+document.addEventListener("click", e => {
+  if (!e.target.classList.contains("run-btn")) return;
+  const type = e.target.dataset.type;
+  const idx = +e.target.dataset.idx;
+  const m = type === "obj" ? objMethods[idx] : strMethods[idx];
+  const r = m.fn();
+  if (type === "obj") {
+    document.getElementById(`obj-before-${idx}`).innerHTML = renderObj(r.before);
+    document.getElementById(`obj-after-${idx}`).innerHTML = renderObj(r.after);
+    document.getElementById(`obj-out-${idx}`).textContent = r.out;
+  } else {
+    document.getElementById(`str-before-${idx}`).innerHTML = renderStr(r.before, r.hl || []);
+    document.getElementById(`str-after-${idx}`).innerHTML = renderStr(r.after);
+    document.getElementById(`str-out-${idx}`).textContent = r.out;
+  }
+});
+</script>
+
+</body>
+</html>
