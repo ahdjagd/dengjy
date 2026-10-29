@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScript 数组方法大全 - 邓嘉毅 24001010907</title>
+<meta name="author" content="邓嘉毅 24001010907">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+  header {
+    text-align: center;
+    padding: 50px 20px 30px;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border-bottom: 3px solid #38bdf8;
+  }
+  header h1 {
+    font-size: 38px;
+    background: linear-gradient(90deg, #38bdf8, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+  }
+  header p { color: #94a3b8; font-size: 15px; }
+  .author {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 6px 18px;
+    background: #38bdf8;
+    color: #0f172a;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .controls {
+    max-width: 1100px;
+    margin: 30px auto 0;
+    padding: 0 20px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .controls button {
+    padding: 8px 18px;
+    border: 1px solid #334155;
+    background: #1e293b;
+    color: #cbd5e1;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  .controls button.active, .controls button:hover {
+    background: #38bdf8;
+    color: #0f172a;
+    border-color: #38bdf8;
+  }
+
+  .grid {
+    max-width: 1100px;
+    margin: 30px auto 0;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 20px;
+    transition: transform 0.25s, border-color 0.25s;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: #38bdf8;
+  }
+  .card h3 {
+    font-size: 18px;
+    color: #38bdf8;
+    margin-bottom: 6px;
+    font-family: "Consolas", monospace;
+  }
+  .card .desc {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .card .row {
+    margin-bottom: 10px;
+  }
+  .card .label {
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 6px;
+    font-family: "Consolas", monospace;
+  }
+  .array-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    min-height: 38px;
+    padding: 6px;
+    background: #0f172a;
+    border-radius: 8px;
+  }
+  .elem {
+    background: #334155;
+    color: #e2e8f0;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: "Consolas", monospace;
+    animation: pop 0.3s ease;
+  }
+  .elem.highlight { background: #38bdf8; color: #0f172a; font-weight: bold; }
+  .elem.danger { background: #ef4444; color: #fff; }
+  .elem.success { background: #22c55e; color: #0f172a; }
+  @keyframes pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .output-text {
+    background: #0f172a;
+    padding: 10px;
+    border-radius: 8px;
+    font-family: "Consolas", monospace;
+    font-size: 13px;
+    color: #a78bfa;
+    min-height: 20px;
+    word-break: break-all;
+  }
+  .run-btn {
+    margin-top: 12px;
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(90deg, #38bdf8, #6366f1);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: opacity 0.2s;
+  }
+  .run-btn:hover { opacity: 0.88; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📚 JavaScript 数组方法可视化</h1>
+  <p>点击"运行"查看每个方法对数组的实际效果 · 共 30+ 方法</p>
+  <span class="author">邓嘉毅 · 24001010907</span>
+</header>
+
+<div class="controls">
+  <button class="active" data-filter="all">全部</button>
+  <button data-filter="add">增删元素</button>
+  <button data-filter="iter">遍历查询</button>
+  <button data-filter="trans">归并转换</button>
+  <button data-filter="sort">排序合并</button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+// 辅助：渲染数组元素
+function renderArr(arr, highlightIndex = -1, className = "") {
+  return arr.map((v, i) =>
+    `<span class="elem ${i === highlightIndex ? 'highlight' : className}">${JSON.stringify(v)}</span>`
+  ).join("");
+}
+
+// 方法定义
+const methods = [
+  // ===== 增删元素 =====
+  { cat: "add", name: "push()", desc: "向数组末尾添加一个或多个元素，返回新长度",
+    fn: () => { const a=[1,2,3]; const n=a.push(4,5); return { before:[1,2,3], after:a, out:`返回新长度: ${n}` }; } },
+  { cat: "add", name: "pop()", desc: "删除并返回数组最后一个元素",
+    fn: () => { const a=[1,2,3,4]; const v=a.pop(); return { before:[1,2,3,4], after:a, out:`弹出: ${v}` }; } },
+  { cat: "add", name: "unshift()", desc: "向数组开头添加元素，返回新长度",
+    fn: () => { const a=[3,4,5]; const n=a.unshift(1,2); return { before:[3,4,5], after:a, out:`返回新长度: ${n}` }; } },
+  { cat: "add", name: "shift()", desc: "删除并返回数组第一个元素",
+    fn: () => { const a=[1,2,3]; const v=a.shift(); return { before:[1,2,3], after:a, out:`移除: ${v}` }; } },
+  { cat: "add", name: "splice()", desc: "从指定位置增删元素，返回被删元素数组",
+    fn: () => { const a=[1,2,3,4,5]; const r=a.splice(1,2,'a','b'); return { before:[1,2,3,4,5], after:a, out:`删除: ${JSON.stringify(r)}` }; } },
+  { cat: "add", name: "slice()", desc: "截取数组片段（不改变原数组）",
+    fn: () => { const a=[1,2,3,4,5]; const r=a.slice(1,4); return { before:[1,2,3,4,5], after:r, out:'原数组不变', highlight:null }; } },
+
+  // ===== 遍历查询 =====
+  { cat: "iter", name: "forEach()", desc: "遍历数组每个元素执行回调，无返回值",
+    fn: () => { const a=[1,2,3]; let sum=0; a.forEach(v=>sum+=v); return { before:a, after:a, out:`累加和: ${sum}` }; } },
+  { cat: "iter", name: "map()", desc: "映射：每个元素经回调转换后返回新数组",
+    fn: () => { const a=[1,2,3,4]; const r=a.map(v=>v*2); return { before:a, after:r, out:'每个元素 ×2' }; } },
+  { cat: "iter", name: "filter()", desc: "过滤：返回满足条件的元素组成的新数组",
+    fn: () => { const a=[1,2,3,4,5,6]; const r=a.filter(v=>v%2===0); return { before:a, after:r, out:'只保留偶数' }; } },
+  { cat: "iter", name: "find()", desc: "返回第一个满足条件的元素，没有则 undefined",
+    fn: () => { const a=[1,3,5,4,6]; const r=a.find(v=>v%2===0); return { before:a, after:a, out:`第一个偶数: ${r}` }; } },
+  { cat: "iter", name: "findIndex()", desc: "返回第一个满足条件元素的索引",
+    fn: () => { const a=[1,3,5,4,6]; const r=a.findIndex(v=>v%2===0); return { before:a, after:a, out:`索引: ${r}` }; } },
+  { cat: "iter", name: "indexOf()", desc: "返回元素首次出现的索引，找不到返回 -1",
+    fn: () => { const a=['a','b','c','b']; const r=a.indexOf('b'); return { before:a, after:a, out:`'b' 首次索引: ${r}` }; } },
+  { cat: "iter", name: "includes()", desc: "判断数组是否包含某元素，返回布尔值",
+    fn: () => { const a=[1,2,3]; const r=a.includes(2); return { before:a, after:a, out:`包含 2? ${r}` }; } },
+  { cat: "iter", name: "some()", desc: "是否至少有一个元素满足条件",
+    fn: () => { const a=[1,3,5]; const r=a.some(v=>v>4); return { before:a, after:a, out:`有元素>4? ${r}` }; } },
+  { cat: "iter", name: "every()", desc: "是否所有元素都满足条件",
+    fn: () => { const a=[2,4,6]; const r=a.every(v=>v%2===0); return { before:a, after:a, out:`全是偶数? ${r}` }; } },
+
+  // ===== 归并转换 =====
+  { cat: "trans", name: "reduce()", desc: "将数组归并为单个值（从左到右）",
+    fn: () => { const a=[1,2,3,4]; const r=a.reduce((s,v)=>s+v,0); return { before:a, after:a, out:`求和: ${r}` }; } },
+  { cat: "trans", name: "reduceRight()", desc: "从右到左归并数组",
+    fn: () => { const a=[[1,2],[3,4],[5,6]]; const r=a.reduceRight((s,v)=>s.concat(v)); return { before:a, after:r, out:'从右向左扁平化' }; } },
+  { cat: "trans", name: "flat()", desc: "按指定深度扁平化嵌套数组",
+    fn: () => { const a=[1,[2,[3,[4]]]]; const r=a.flat(2); return { before:a, after:r, out:'扁平深度 2' }; } },
+  { cat: "trans", name: "flatMap()", desc: "先 map 再 flat(1)，一步完成映射+扁平化",
+    fn: () => { const a=[1,2,3]; const r=a.flatMap(v=>[v,v*10]); return { before:a, after:r, out:'映射后扁平' }; } },
+
+  // ===== 排序合并 =====
+  { cat: "sort", name: "sort()", desc: "原地排序数组（默认按 Unicode）",
+    fn: () => { const a=[3,1,4,1,5,9,2,6]; const r=a.sort((x,y)=>x-y); return { before:[3,1,4,1,5,9,2,6], after:r, out:'升序排列' }; } },
+  { cat: "sort", name: "reverse()", desc: "原地反转数组顺序",
+    fn: () => { const a=[1,2,3,4,5]; const r=a.reverse(); return { before:[1,2,3,4,5], after:r, out:'已反转' }; } },
+  { cat: "sort", name: "concat()", desc: "合并两个或多个数组，返回新数组",
+    fn: () => { const a=[1,2]; const b=[3,4]; const r=a.concat(b,[5]); return { before:a, after:r, out:'合并后' }; } },
+  { cat: "sort", name: "join()", desc: "将数组元素用分隔符连接成字符串",
+    fn: () => { const a=['2024','10','27']; const r=a.join('-'); return { before:a, after:a, out:`结果: "${r}"` }; } },
+  { cat: "sort", name: "fill()", desc: "用固定值填充数组指定区间",
+    fn: () => { const a=[1,2,3,4,5]; const r=a.fill(0,1,4); return { before:[1,2,3,4,5], after:r, out:'索引1~3填0' }; } },
+  { cat: "sort", name: "Array.from()", desc: "从类数组/可迭代对象创建新数组",
+    fn: () => { const r=Array.from('abc'); return { before:['a','b','c'], after:r, out:'字符串转数组' }; } },
+  { cat: "sort", name: "Array.of()", desc: "创建包含任意数量参数的数组",
+    fn: () => { const r=Array.of(1,2,3); return { before:[1,2,3], after:r, out:'Array.of(1,2,3)' }; } },
+  { cat: "sort", name: "Array.isArray()", desc: "判断值是否为数组",
+    fn: () => { const r=Array.isArray([1,2]); return { before:[1,2], after:[1,2], out:`是数组? ${r}` }; } },
+];
+
+const grid = document.getElementById("grid");
+
+methods.forEach((m, idx) => {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.dataset.cat = m.cat;
+  card.innerHTML = `
+    <h3>${m.name}</h3>
+    <p class="desc">${m.desc}</p>
+    <div class="row">
+      <div class="label">输入 (before)</div>
+      <div class="array-box" id="before-${idx}">${renderArr([])}</div>
+    </div>
+    <div class="row">
+      <div class="label">结果 (after / output)</div>
+      <div class="array-box" id="after-${idx}">${renderArr([])}</div>
+    </div>
+    <div class="output-text" id="out-${idx}">点击下方"运行"查看结果</div>
+    <button class="run-btn" data-idx="${idx}">▶ 运行</button>
+  `;
+  grid.appendChild(card);
+});
+
+// 绑定运行按钮
+grid.addEventListener("click", e => {
+  if (e.target.classList.contains("run-btn")) {
+    const idx = +e.target.dataset.idx;
+    const m = methods[idx];
+    const result = m.fn();
+    document.getElementById(`before-${idx}`).innerHTML = renderArr(result.before);
+    document.getElementById(`after-${idx}`).innerHTML = renderArr(result.after);
+    document.getElementById(`out-${idx}`).textContent = result.out;
+  }
+});
+
+// 分类筛选
+document.querySelectorAll(".controls button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".controls button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const filter = btn.dataset.filter;
+    document.querySelectorAll(".card").forEach(card => {
+      card.classList.toggle("hidden", filter !== "all" && card.dataset.cat !== filter);
+    });
+  });
+});
+</script>
+
+</body>
+</html>
