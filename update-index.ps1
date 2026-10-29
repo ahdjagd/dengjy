@@ -62,7 +62,10 @@ $html = @"
     <div class="page-shell">
         <header class="topbar">
             <div class="brand-mark">课堂实践档案 · 2026</div>
-            <a href="#works">浏览全部作品 ↓</a>
+            <nav class="topbar-links">
+                <a href="#works">浏览全部作品 ↓</a>
+                <a href="update-index.ps1">自动更新脚本 ↻</a>
+            </nav>
         </header>
 
         <main>

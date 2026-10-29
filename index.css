@@ -79,6 +79,12 @@ a {
     color: var(--coral);
 }
 
+.topbar-links {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+}
+
 .hero {
     position: relative;
     isolation: isolate;
