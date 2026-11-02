@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>商品详情 - 邓嘉毅 24001010907</title>
+<meta name="author" content="邓嘉毅 24001010907">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: #0f172a; color: #e2e8f0;
+    min-height: 100vh; padding-bottom: 60px;
+  }
+  header {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    padding: 20px; border-bottom: 3px solid #f472b6;
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  }
+  header h1 {
+    font-size: 22px;
+    background: linear-gradient(90deg, #f472b6, #a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .back {
+    padding: 8px 14px; background: #334155; color: #e2e8f0;
+    border-radius: 6px; text-decoration: none; font-size: 13px;
+  }
+  .back:hover { background: #475569; }
+  .author {
+    margin-left: auto; padding: 5px 14px;
+    background: #f472b6; color: #0f172a; border-radius: 20px;
+    font-size: 12px; font-weight: bold;
+  }
+
+  .wrap { max-width: 900px; margin: 30px auto 0; padding: 0 20px; }
+
+  .detail {
+    display: grid; grid-template-columns: 320px 1fr; gap: 28px;
+    background: #1e293b; border: 1px solid #334155; border-radius: 14px;
+    padding: 24px;
+  }
+  .gallery img {
+    width: 100%; height: 300px; object-fit: contain;
+    background: #0f172a; border-radius: 10px;
+    border: 1px solid #334155;
+  }
+  .thumbs { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .thumbs img {
+    width: 56px; height: 56px; object-fit: contain;
+    background: #0f172a; border-radius: 6px;
+    border: 2px solid #334155; cursor: pointer;
+  }
+  .thumbs img.active { border-color: #f472b6; }
+
+  .info h2 { font-size: 22px; margin-bottom: 8px; }
+  .info .cat-tag {
+    display: inline-block; padding: 3px 10px; background: #334155;
+    color: #f472b6; border-radius: 10px; font-size: 12px; margin-right: 6px;
+  }
+  .info .brand {
+    display: inline-block; padding: 3px 10px; background: #1e3a5f;
+    color: #22d3ee; border-radius: 10px; font-size: 12px;
+  }
+  .info .rating { margin-top: 10px; font-size: 15px; color: #fbbf24; }
+  .info .rating span { color: #64748b; font-size: 12px; margin-left: 6px; }
+  .info .desc {
+    margin-top: 14px; font-size: 14px; color: #94a3b8; line-height: 1.8;
+  }
+
+  .price-row {
+    margin-top: 20px; padding: 16px; background: #0f172a;
+    border-radius: 10px; display: flex; align-items: center; gap: 18px;
+  }
+  .price { color: #fbbf24; font-size: 32px; font-weight: bold; }
+  .price::before { content: "$"; font-size: 18px; }
+  .discount {
+    color: #86efac; font-size: 13px;
+    background: #14532d; padding: 3px 10px; border-radius: 6px;
+  }
+  .stock { margin-left: auto; font-size: 13px; color: #94a3b8; }
+  .stock b { color: #34d399; }
+  .stock.low b { color: #fbbf24; }
+  .stock.none b { color: #f87171; }
+
+  .meta {
+    margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .meta div {
+    background: #0f172a; padding: 10px 14px; border-radius: 8px;
+    font-size: 13px; color: #94a3b8;
+  }
+  .meta div b { color: #e2e8f0; }
+
+  .loading, .err, .empty {
+    text-align: center; padding: 60px 20px; color: #94a3b8; font-size: 14px;
+  }
+  .err { color: #f87171; }
+
+  @media (max-width: 680px) {
+    .detail { grid-template-columns: 1fr; }
+    .gallery img { height: 220px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="back" href="17-3.html">← 返回列表</a>
+  <h1>商品详情</h1>
+  <span class="author">邓嘉毅 · 24001010907</span>
+</header>
+
+<div class="wrap">
+  <div id="content"><div class="loading">加载中...</div></div>
+</div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
+  const content = document.getElementById('content');
+
+  if (!id) {
+    content.innerHTML = '<div class="empty">⚠ 缺少商品 ID，<a href="17-3.html" style="color:#f472b6">返回列表</a></div>';
+  } else {
+    load(id);
+  }
+
+  async function load(id) {
+    try {
+      const res = await fetch(`https://dummyjson.com/products/${id}`);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const p = await res.json();
+      render(p);
+      document.title = p.title + ' - 商品详情';
+    } catch (e) {
+      content.innerHTML = `<div class="err">❌ 加载失败：${e.message}</div>`;
+    }
+  }
+
+  function render(p) {
+    const imgs = p.images && p.images.length ? p.images : [p.thumbnail];
+    const stockCls = p.stock === 0 ? 'none' : (p.stock < 20 ? 'low' : '');
+    const stockText = p.stock === 0 ? '暂无库存' : `库存 <b>${p.stock}</b>`;
+
+    content.innerHTML = `
+      <div class="detail">
+        <div class="gallery">
+          <img id="mainImg" src="${imgs[0]}" alt="${p.title}">
+          <div class="thumbs">
+            ${imgs.map((src, i) => `<img src="${src}" class="${i === 0 ? 'active' : ''}" onclick="switchImg(this, '${src}')">`).join('')}
+          </div>
+        </div>
+        <div class="info">
+          <h2>${p.title}</h2>
+          <div>
+            <span class="cat-tag">${p.category || ''}</span>
+            ${p.brand ? `<span class="brand">🏢 ${p.brand}</span>` : ''}
+          </div>
+          <div class="rating">
+            ${'★'.repeat(Math.round(p.rating || 0))}${'☆'.repeat(5 - Math.round(p.rating || 0))}
+            <span>评分 ${p.rating || 0} · ${p.reviews?.length || 0} 条评价</span>
+          </div>
+          <p class="desc">${p.description || ''}</p>
+          <div class="price-row">
+            <span class="price">${p.price ?? 0}</span>
+            ${p.discountPercentage ? `<span class="discount">-${Math.round(p.discountPercentage)}%</span>` : ''}
+            <span class="stock ${stockCls}">${stockText}</span>
+          </div>
+          <div class="meta">
+            <div><b>SKU：</b>${p.sku || '-'}</div>
+            <div><b>重量：</b>${p.weight ?? '-'} g</div>
+            <div><b>宽：</b>${p.dimensions?.width ?? '-'} cm</div>
+            <div><b>高：</b>${p.dimensions?.height ?? '-'} cm</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function switchImg(el, src) {
+    document.getElementById('mainImg').src = src;
+    document.querySelectorAll('.thumbs img').forEach(x => x.classList.remove('active'));
+    el.classList.add('active');
+  }
+</script>
+
+</body>
+</html>

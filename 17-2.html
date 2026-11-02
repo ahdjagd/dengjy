@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>fetch 接口调用演示 - 邓嘉毅 24001010907</title>
+<meta name="author" content="邓嘉毅 24001010907">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: #0f172a; color: #e2e8f0;
+    min-height: 100vh; padding-bottom: 50px;
+  }
+  header {
+    text-align: center; padding: 40px 20px 24px;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border-bottom: 3px solid #34d399;
+  }
+  header h1 {
+    font-size: 34px;
+    background: linear-gradient(90deg, #34d399, #22d3ee);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  header p { color: #94a3b8; font-size: 14px; }
+  .author {
+    display: inline-block; margin-top: 12px; padding: 6px 18px;
+    background: #34d399; color: #0f172a; border-radius: 20px;
+    font-size: 13px; font-weight: bold;
+  }
+
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+
+  .control {
+    background: #1e293b; border: 1px solid #334155;
+    border-radius: 12px; padding: 16px; margin-top: 20px;
+  }
+  .control input {
+    width: 100%; background: #0f172a; color: #e2e8f0;
+    border: 1px solid #334155; border-radius: 6px; padding: 10px 12px;
+    font-family: "Consolas", monospace; font-size: 13px; margin-bottom: 10px;
+  }
+  .control input:focus { outline: none; border-color: #34d399; }
+  .control .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .btn {
+    padding: 10px 18px; background: linear-gradient(90deg, #34d399, #22d3ee);
+    color: #0f172a; border: none; border-radius: 8px;
+    cursor: pointer; font-weight: bold; font-size: 13px;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn.secondary {
+    background: #334155; color: #e2e8f0;
+  }
+  .status {
+    font-size: 12px; color: #94a3b8; margin-left: auto;
+  }
+  .status.ok { color: #34d399; }
+  .status.err { color: #f87171; }
+
+  /* 代码块 */
+  pre {
+    background: #1e293b; border: 1px solid #334155;
+    border-radius: 10px; padding: 14px; overflow-x: auto;
+    font-family: "Consolas", monospace; font-size: 13px; line-height: 1.7;
+    margin-top: 16px;
+  }
+  .kw { color: #c084fc; }
+  .str { color: #86efac; }
+  .cmt { color: #64748b; font-style: italic; }
+
+  /* 用户卡片 */
+  .users {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px; margin-top: 16px;
+  }
+  .user-card {
+    background: #1e293b; border: 1px solid #334155;
+    border-radius: 10px; padding: 14px;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .user-card:hover { transform: translateY(-3px); border-color: #34d399; }
+  .user-card .top {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+  }
+  .avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: linear-gradient(135deg, #34d399, #22d3ee);
+    display: flex; align-items: center; justify-content: center;
+    color: #0f172a; font-weight: bold; font-size: 18px;
+  }
+  .user-card h3 { font-size: 15px; color: #e2e8f0; }
+  .user-card .uname { font-size: 12px; color: #64748b; }
+  .user-card p {
+    font-size: 12px; color: #94a3b8; margin-top: 4px; line-height: 1.6;
+  }
+  .tag {
+    display: inline-block; padding: 2px 8px; background: #334155;
+    color: #34d399; border-radius: 10px; font-size: 11px; margin-top: 6px;
+  }
+
+  .loading {
+    text-align: center; padding: 40px; color: #94a3b8; font-size: 14px;
+  }
+  .loading::after {
+    content: "..."; animation: dots 1s steps(4, end) infinite;
+  }
+  @keyframes dots {
+    0%, 20% { content: "."; }
+    40% { content: ".."; }
+    60%, 100% { content: "..."; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌐 fetch 接口调用演示</h1>
+  <p>使用原生 fetch API 获取跨域公开接口数据并渲染</p>
+  <span class="author">邓嘉毅 · 24001010907</span>
+</header>
+
+<div class="wrap">
+  <!-- 核心代码展示 -->
+  <pre><span class="cmt">// fetch 基本结构</span>
+<span class="kw">async function</span> getData() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> res = <span class="kw">await</span> fetch(<span class="str">"https://jsonplaceholder.typicode.com/users"</span>);
+    <span class="kw">if</span> (!res.ok) <span class="kw">throw new</span> Error(<span class="str">"HTTP "</span> + res.status);
+    <span class="kw">const</span> data = <span class="kw">await</span> res.json();
+    console.log(data);
+  } <span class="kw">catch</span> (e) {
+    console.error(e);
+  }
+}</pre>
+
+  <!-- 控制面板 -->
+  <div class="control">
+    <input id="urlInput" value="https://jsonplaceholder.typicode.com/users">
+    <div class="row">
+      <button class="btn" onclick="loadData()">🔄 发起 fetch 请求</button>
+      <button class="btn secondary" onclick="clearCards()">清空</button>
+      <span class="status" id="statusBar">就绪</span>
+    </div>
+  </div>
+
+  <!-- 数据展示 -->
+  <div id="dataArea"><div class="loading">等待请求</div></div>
+</div>
+
+<script>
+  const statusBar = document.getElementById('statusBar');
+  const dataArea = document.getElementById('dataArea');
+
+  async function loadData() {
+    const url = document.getElementById('urlInput').value.trim();
+    if (!url) { statusBar.textContent = '请输入 URL'; statusBar.className = 'status err'; return; }
+
+    dataArea.innerHTML = '<div class="loading">请求中</div>';
+    statusBar.textContent = '请求中...'; statusBar.className = 'status';
+    const t0 = Date.now();
+
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.statusText);
+      const data = await res.json();
+      const ms = Date.now() - t0;
+      statusBar.textContent = `✅ ${res.status} ${res.statusText} · ${ms}ms · ${Array.isArray(data) ? data.length + ' 条' : 'object'}`;
+      statusBar.className = 'status ok';
+      render(data);
+    } catch (e) {
+      statusBar.textContent = '❌ ' + e.message;
+      statusBar.className = 'status err';
+      dataArea.innerHTML = `<div style="text-align:center;padding:40px;color:#f87171;">请求失败：${e.message}</div>`;
+    }
+  }
+
+  function render(data) {
+    if (Array.isArray(data)) {
+      dataArea.innerHTML = `<div class="users">${data.map(userCard).join('')}</div>`;
+    } else if (data && typeof data === 'object') {
+      // 可能在 .data 或 .products 下
+      const arr = data.data || data.products || data.users || null;
+      if (Array.isArray(arr)) {
+        dataArea.innerHTML = `<div class="users">${arr.map(userCard).join('')}</div>`;
+      } else {
+        // 单对象
+        dataArea.innerHTML = `<div class="users">${userCard(data)}</div>`;
+      }
+    }
+  }
+
+  function userCard(u) {
+    const name = u.name || u.title || '未命名';
+    const initial = (u.name || u.username || u.title || '?').charAt(0).toUpperCase();
+    const uname = u.username || u.email || '';
+    const email = u.email || '';
+    const city = (u.address && u.address.city) || '';
+    const phone = u.phone || '';
+    return `
+      <div class="user-card">
+        <div class="top">
+          <div class="avatar">${initial}</div>
+          <div>
+            <h3>${name}</h3>
+            <div class="uname">@${uname}</div>
+          </div>
+        </div>
+        ${email ? `<p>📧 ${email}</p>` : ''}
+        ${city ? `<p>📍 ${city}</p>` : ''}
+        ${phone ? `<p>📱 ${phone}</p>` : ''}
+        ${u.company ? `<span class="tag">🏢 ${u.company.name}</span>` : ''}
+        ${u.website ? `<span class="tag">🌐 ${u.website}</span>` : ''}
+      </div>`;
+  }
+
+  function clearCards() {
+    dataArea.innerHTML = '<div class="loading">等待请求</div>';
+    statusBar.textContent = '已清空'; statusBar.className = 'status';
+  }
+
+  // 页面加载时自动请求一次
+  loadData();
+</script>
+
+</body>
+</html>

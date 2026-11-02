@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>商品列表 - 邓嘉毅 24001010907</title>
+<meta name="author" content="邓嘉毅 24001010907">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: #0f172a; color: #e2e8f0;
+    min-height: 100vh; padding-bottom: 60px;
+  }
+  header {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    padding: 30px 20px 20px; text-align: center;
+    border-bottom: 3px solid #f472b6;
+  }
+  header h1 {
+    font-size: 30px;
+    background: linear-gradient(90deg, #f472b6, #a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  header p { color: #94a3b8; font-size: 13px; margin-top: 6px; }
+  .author {
+    display: inline-block; margin-top: 10px; padding: 5px 16px;
+    background: #f472b6; color: #0f172a; border-radius: 20px;
+    font-size: 12px; font-weight: bold;
+  }
+
+  .toolbar {
+    max-width: 1100px; margin: 20px auto 0; padding: 0 20px;
+    display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+  }
+  .search {
+    flex: 1; min-width: 200px;
+    background: #1e293b; border: 1px solid #334155; border-radius: 8px;
+    padding: 10px 14px; color: #e2e8f0; font-size: 13px;
+  }
+  .search:focus { outline: none; border-color: #f472b6; }
+  .cat-btn {
+    padding: 8px 16px; background: #1e293b; border: 1px solid #334155;
+    border-radius: 20px; color: #94a3b8; cursor: pointer; font-size: 12px;
+    transition: all 0.2s;
+  }
+  .cat-btn:hover { color: #e2e8f0; border-color: #f472b6; }
+  .cat-btn.active { background: #f472b6; color: #0f172a; border-color: #f472b6; font-weight: bold; }
+
+  .count {
+    max-width: 1100px; margin: 16px auto 0; padding: 0 20px;
+    font-size: 12px; color: #64748b;
+  }
+
+  .grid {
+    max-width: 1100px; margin: 16px auto 0; padding: 0 20px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+    overflow: hidden; cursor: pointer; transition: transform 0.25s, border-color 0.25s;
+  }
+  .card:hover { transform: translateY(-5px); border-color: #f472b6; }
+  .card .img-wrap {
+    width: 100%; height: 160px; background: #0f172a;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .card img {
+    max-width: 100%; max-height: 100%; object-fit: contain;
+    transition: transform 0.3s;
+  }
+  .card:hover img { transform: scale(1.05); }
+  .card .body { padding: 12px 14px 14px; }
+  .card .cat-tag {
+    display: inline-block; padding: 2px 8px; background: #334155;
+    color: #f472b6; border-radius: 10px; font-size: 11px; margin-bottom: 6px;
+  }
+  .card h3 {
+    font-size: 14px; color: #e2e8f0; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .card .desc {
+    font-size: 12px; color: #64748b; margin: 6px 0;
+    height: 32px; overflow: hidden;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  }
+  .card .foot {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 8px;
+  }
+  .price { color: #fbbf24; font-size: 18px; font-weight: bold; }
+  .price::before { content: "$"; font-size: 13px; }
+  .stars { font-size: 12px; color: #fbbf24; }
+  .stars span { color: #64748b; }
+
+  .loading, .empty, .err {
+    text-align: center; padding: 60px 20px; color: #94a3b8; font-size: 14px;
+  }
+  .err { color: #f87171; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🛍 商品列表</h1>
+  <p>数据来源：dummyjson.com/products · fetch + 原生 JS</p>
+  <span class="author">邓嘉毅 · 24001010907</span>
+</header>
+
+<div class="toolbar">
+  <input class="search" id="searchBox" placeholder="🔍 搜索商品名称..." oninput="render()">
+  <button class="cat-btn active" data-cat="all">全部</button>
+</div>
+<div class="count" id="count"></div>
+<div class="grid" id="grid"><div class="loading">加载中...</div></div>
+
+<script>
+  const API = 'https://dummyjson.com/products';
+  let allProducts = [];
+  let categories = new Set();
+  let currentCat = 'all';
+
+  document.querySelectorAll('.cat-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.cat-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      currentCat = b.dataset.cat;
+      render();
+    });
+  });
+
+  async function load() {
+    try {
+      const res = await fetch(API);
+      const data = await res.json();
+      allProducts = data.products || [];
+      allProducts.forEach(p => { if (p.category) categories.add(p.category); });
+      // 渲染分类按钮
+      const toolbar = document.querySelector('.toolbar');
+      Array.from(categories).sort().forEach(cat => {
+        const b = document.createElement('button');
+        b.className = 'cat-btn';
+        b.dataset.cat = cat;
+        b.textContent = cat;
+        b.onclick = () => {
+          document.querySelectorAll('.cat-btn').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          currentCat = cat;
+          render();
+        };
+        toolbar.appendChild(b);
+      });
+      render();
+    } catch (e) {
+      document.getElementById('grid').innerHTML = `<div class="err">❌ 加载失败：${e.message}</div>`;
+    }
+  }
+
+  function render() {
+    const kw = document.getElementById('searchBox').value.trim().toLowerCase();
+    let list = allProducts;
+    if (currentCat !== 'all') list = list.filter(p => p.category === currentCat);
+    if (kw) list = list.filter(p =>
+      (p.title || '').toLowerCase().includes(kw) ||
+      (p.description || '').toLowerCase().includes(kw)
+    );
+    document.getElementById('count').textContent = `共 ${list.length} 件商品`;
+    if (list.length === 0) {
+      document.getElementById('grid').innerHTML = '<div class="empty">没有找到匹配的商品</div>';
+      return;
+    }
+    document.getElementById('grid').innerHTML = list.map(card).join('');
+  }
+
+  function card(p) {
+    const stars = '★'.repeat(Math.round(p.rating || 0)) + '☆'.repeat(5 - Math.round(p.rating || 0));
+    return `
+      <a class="card" href="17-3-detail.html?id=${p.id}" style="text-decoration:none; color:inherit;">
+        <div class="img-wrap">
+          <img src="${p.thumbnail}" alt="${p.title}" loading="lazy"
+               onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22160%22><rect fill=%22%23334155%22 width=%22100%25%22 height=%22100%25%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%2364748b%22 font-size=%2214%22 text-anchor=%22middle%22>无图</text></svg>'">
+        </div>
+        <div class="body">
+          <span class="cat-tag">${p.category || ''}</span>
+          <h3>${p.title}</h3>
+          <p class="desc">${p.description || ''}</p>
+          <div class="foot">
+            <span class="price">${p.price ?? 0}</span>
+            <span class="stars">${stars} <span>(${p.rating || 0})</span></span>
+          </div>
+        </div>
+      </a>`;
+  }
+
+  load();
+</script>
+
+</body>
+</html>

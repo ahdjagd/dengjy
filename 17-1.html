@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON 可视化 - 邓嘉毅 24001010907</title>
+<meta name="author" content="邓嘉毅 24001010907">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: #0f172a; color: #e2e8f0;
+    min-height: 100vh; padding-bottom: 50px;
+  }
+  header {
+    text-align: center; padding: 40px 20px 24px;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border-bottom: 3px solid #22d3ee;
+  }
+  header h1 {
+    font-size: 34px;
+    background: linear-gradient(90deg, #22d3ee, #a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  header p { color: #94a3b8; font-size: 14px; }
+  .author {
+    display: inline-block; margin-top: 12px; padding: 6px 18px;
+    background: #22d3ee; color: #0f172a; border-radius: 20px;
+    font-size: 13px; font-weight: bold;
+  }
+  .section-title {
+    max-width: 1000px; margin: 36px auto 12px; padding: 0 20px;
+    font-size: 20px; color: #22d3ee;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title::before {
+    content: ""; width: 6px; height: 20px;
+    background: #22d3ee; border-radius: 3px;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+
+  /* JSON 示例区 */
+  .example-box {
+    background: #1e293b; border: 1px solid #334155;
+    border-radius: 12px; padding: 16px; margin-bottom: 16px;
+  }
+  .example-box h3 {
+    color: #22d3ee; margin-bottom: 10px; font-size: 15px;
+  }
+  pre {
+    background: #0f172a; padding: 14px; border-radius: 8px;
+    overflow-x: auto; font-family: "Consolas", monospace;
+    font-size: 13px; line-height: 1.7; color: #e2e8f0;
+  }
+  .kw { color: #c084fc; }
+  .str { color: #86efac; }
+  .num { color: #fbbf24; }
+  .bool { color: #f472b6; }
+  .null { color: #94a3b8; }
+  .cmt { color: #64748b; font-style: italic; }
+
+  /* 转换区 */
+  .convert {
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px;
+    margin-bottom: 16px;
+  }
+  .convert textarea {
+    width: 100%; min-height: 180px;
+    background: #0f172a; color: #e2e8f0;
+    border: 1px solid #334155; border-radius: 8px;
+    padding: 12px; font-family: "Consolas", monospace;
+    font-size: 13px; resize: vertical;
+  }
+  .convert textarea:focus { outline: none; border-color: #22d3ee; }
+  .convert .center {
+    display: flex; flex-direction: column; justify-content: center; gap: 8px;
+  }
+  .convert button {
+    padding: 10px 14px; background: linear-gradient(90deg, #22d3ee, #a78bfa);
+    color: #0f172a; border: none; border-radius: 8px;
+    cursor: pointer; font-weight: bold; font-size: 13px;
+  }
+  .convert button:hover { opacity: 0.85; }
+  .err { color: #ef4444; font-size: 13px; margin-top: 6px; min-height: 18px; }
+
+  /* 类型表 */
+  table {
+    width: 100%; border-collapse: collapse; margin-top: 8px;
+    background: #1e293b; border-radius: 10px; overflow: hidden;
+  }
+  th, td {
+    padding: 10px 14px; text-align: left;
+    border-bottom: 1px solid #334155; font-size: 13px;
+  }
+  th { background: #334155; color: #22d3ee; }
+  tr:last-child td { border-bottom: none; }
+  td code {
+    background: #0f172a; padding: 2px 6px; border-radius: 4px;
+    font-family: "Consolas", monospace;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📋 JSON 可视化</h1>
+  <p>JSON 语法 · parse / stringify · 在线互转</p>
+  <span class="author">邓嘉毅 · 24001010907</span>
+</header>
+
+<div class="section-title">一、什么是 JSON</div>
+<div class="wrap">
+  <div class="example-box">
+    <h3>JSON（JavaScript Object Notation）</h3>
+    <p style="font-size:13px; color:#94a3b8; line-height:1.8;">
+      一种轻量级数据交换格式，使用 <span class="str">"键": 值</span> 的方式描述数据。<br>
+      可被几乎所有编程语言解析，是 Web 前后端通信的标准格式。
+    </p>
+  </div>
+
+  <div class="example-box">
+    <h3>一个完整的 JSON 对象示例</h3>
+<pre>{
+  <span class="str">"name"</span>: <span class="str">"邓嘉毅"</span>,
+  <span class="str">"age"</span>: <span class="num">18</span>,
+  <span class="str">"student"</span>: <span class="bool">true</span>,
+  <span class="str">"hobbies"</span>: [<span class="str">"编程"</span>, <span class="str">"音乐"</span>, <span class="str">"篮球"</span>],
+  <span class="str">"address"</span>: {
+    <span class="str">"city"</span>: <span class="str">"北京"</span>,
+    <span class="str">"zip"</span>: <span class="str">"100000"</span>
+  },
+  <span class="str">"score"</span>: <span class="null">null</span>
+}</pre>
+  </div>
+</div>
+
+<div class="section-title">二、JSON 支持的数据类型</div>
+<div class="wrap">
+  <table>
+    <tr><th>类型</th><th>说明</th><th>示例</th></tr>
+    <tr><td>字符串 string</td><td>必须用双引号包裹</td><td><code class="str">"hello"</code></td></tr>
+    <tr><td>数字 number</td><td>整数、小数、科学计数</td><td><code class="num">42</code> <code class="num">3.14</code></td></tr>
+    <tr><td>布尔 boolean</td><td>只有 true / false</td><td><code class="bool">true</code></td></tr>
+    <tr><td>空值 null</td><td>表示无值</td><td><code class="null">null</code></td></tr>
+    <tr><td>对象 object</td><td><code>{}</code> 包裹的键值对</td><td><code>{ "a": 1 }</code></td></tr>
+    <tr><td>数组 array</td><td><code>[]</code> 包裹的有序列表</td><td><code>[1, 2, 3]</code></td></tr>
+  </table>
+  <p style="font-size:12px; color:#64748b; margin-top:10px;">
+    ⚠ JSON 不支持：函数、undefined、Date 对象、注释（这是常见误区）。
+  </p>
+</div>
+
+<div class="section-title">三、JSON.parse() — 字符串 → 对象</div>
+<div class="wrap">
+  <div class="example-box">
+    <h3>将 JSON 字符串解析为 JavaScript 对象</h3>
+<pre><span class="kw">const</span> jsonStr = <span class="str">'{"name":"Tom","age":20}'</span>;
+<span class="kw">const</span> obj = JSON.parse(jsonStr);
+
+console.log(obj.name); <span class="cmt">// "Tom"</span>
+console.log(obj.age);  <span class="cmt">// 20</span></pre>
+  </div>
+</div>
+
+<div class="section-title">四、JSON.stringify() — 对象 → 字符串</div>
+<div class="wrap">
+  <div class="example-box">
+    <h3>将 JavaScript 对象序列化为 JSON 字符串</h3>
+<pre><span class="kw">const</span> obj = { name: <span class="str">"Tom"</span>, age: <span class="num">20</span> };
+<span class="kw">const</span> s = JSON.stringify(obj);
+
+console.log(s); <span class="cmt">// '{"name":"Tom","age":20}'</span>
+
+<span class="cmt">// 带缩进，方便阅读</span>
+<span class="kw">const</span> pretty = JSON.stringify(obj, <span class="null">null</span>, <span class="num">2</span>);</pre>
+  </div>
+</div>
+
+<div class="section-title">五、在线互转（可直接编辑）</div>
+<div class="wrap">
+  <div class="convert">
+    <div>
+      <div style="font-size:12px; color:#22d3ee; margin-bottom:6px;">JSON 字符串</div>
+      <textarea id="strBox">{
+  "name": "邓嘉毅",
+  "age": 18,
+  "skills": ["HTML", "CSS", "JavaScript"]
+}</textarea>
+    </div>
+    <div class="center">
+      <button onclick="toObj()">parse ▶</button>
+      <button onclick="toStr()">◀ stringify</button>
+      <button onclick="format()">✦ 格式化</button>
+    </div>
+    <div>
+      <div style="font-size:12px; color:#a78bfa; margin-bottom:6px;">JavaScript 对象</div>
+      <textarea id="objBox" placeholder="{ name: '...' }"></textarea>
+    </div>
+  </div>
+  <div class="err" id="errBox"></div>
+</div>
+
+<script>
+  const strBox = document.getElementById('strBox');
+  const objBox = document.getElementById('objBox');
+  const errBox = document.getElementById('errBox');
+
+  function toObj() {
+    errBox.textContent = '';
+    try {
+      const obj = JSON.parse(strBox.value);
+      objBox.value = objToCode(obj);
+    } catch (e) { errBox.textContent = '❌ parse 失败：' + e.message; }
+  }
+
+  function toStr() {
+    errBox.textContent = '';
+    try {
+      const obj = eval('(' + objBox.value + ')');
+      strBox.value = JSON.stringify(obj, null, 2);
+    } catch (e) { errBox.textContent = '❌ 无法求值：' + e.message; }
+  }
+
+  function format() {
+    errBox.textContent = '';
+    try {
+      const obj = JSON.parse(strBox.value);
+      strBox.value = JSON.stringify(obj, null, 2);
+    } catch (e) { errBox.textContent = '❌ 不是合法 JSON：' + e.message; }
+  }
+
+  function objToCode(obj, indent = 0) {
+    const pad = '  '.repeat(indent);
+    if (obj === null) return 'null';
+    if (typeof obj === 'string') return `"${obj}"`;
+    if (typeof obj === 'number' || typeof obj === 'boolean') return String(obj);
+    if (Array.isArray(obj)) {
+      if (obj.length === 0) return '[]';
+      return '[\n' + obj.map(v => pad + '  ' + objToCode(v, indent + 1)).join(',\n') + '\n' + pad + ']';
+    }
+    if (typeof obj === 'object') {
+      const keys = Object.keys(obj);
+      if (keys.length === 0) return '{}';
+      return '{\n' + keys.map(k => pad + `  ${k}: ` + objToCode(obj[k], indent + 1)).join(',\n') + '\n' + pad + '}';
+    }
+    return String(obj);
+  }
+
+  // 初始把示例对象也显示到右侧
+  toObj();
+</script>
+
+</body>
+</html>
