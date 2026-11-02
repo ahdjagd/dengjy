@@ -15,32 +15,23 @@
 
   .wrap { max-width: 900px; margin: 0 auto; padding: 0 20px; }
 
-  /* 流程图 */
   .flow { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; }
-  .stage {
-    background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 14px;
-    display: flex; align-items: center; gap: 14px; transition: border-color 0.3s, background 0.3s;
-  }
+  .stage { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 14px; transition: border-color 0.3s, background 0.3s; }
   .stage.active { border-color: #a78bfa; background: #2d1f4e; box-shadow: 0 0 20px rgba(167,139,250,0.3); }
   .stage.done { border-color: #34d399; background: #14532d33; }
+  .stage.early { border-color: #fbbf24; background: #451a0333; }
   .stage.error { border-color: #f87171; background: #7f1d1d33; }
 
-  .stage .icon { font-size: 30px; width: 44px; text-align: center; }
+  .stage .icon { font-size: 28px; width: 40px; text-align: center; }
   .stage .info { flex: 1; }
-  .stage h3 { font-size: 15px; color: #e2e8f0; }
+  .stage h3 { font-size: 14px; color: #e2e8f0; }
   .stage p { font-size: 12px; color: #94a3b8; margin-top: 2px; }
-  .stage .timer {
-    font-family: "Consolas", monospace; font-size: 14px; color: #fbbf24; min-width: 60px; text-align: right;
-  }
+  .stage .timer { font-family: "Consolas", monospace; font-size: 14px; color: #fbbf24; min-width: 60px; text-align: right; }
 
-  /* 并发分组 */
   .parallel { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; position: relative; }
-  .parallel::before {
-    content: "并行（Promise.all）";
-    position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-    background: #0f172a; padding: 2px 12px; border-radius: 10px;
-    font-size: 11px; color: #a78bfa; border: 1px dashed #a78bfa;
-  }
+  .parallel::before { content: attr(data-label); position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #0f172a; padding: 2px 12px; border-radius: 10px; font-size: 11px; border: 1px dashed; }
+  .parallel.all::before { color: #a78bfa; border-color: #a78bfa; }
+  .parallel.race::before { color: #fbbf24; border-color: #fbbf24; }
   .parallel .stage { margin-top: 10px; }
   @media (max-width: 600px) { .parallel { grid-template-columns: 1fr; } }
 
@@ -50,18 +41,14 @@
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn.reset { background: #334155; color: #e2e8f0; }
 
-  /* 日志 */
-  .log-box {
-    background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 14px;
-    margin-top: 20px; max-height: 240px; overflow-y: auto; font-family: "Consolas", monospace; font-size: 12px; line-height: 1.9;
-  }
+  .log-box { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 14px; margin-top: 20px; max-height: 260px; overflow-y: auto; font-family: "Consolas", monospace; font-size: 12px; line-height: 1.9; }
   .log-box .entry { color: #94a3b8; }
   .log-box .entry .t { color: #60a5fa; margin-right: 6px; }
   .log-box .entry.ok { color: #86efac; }
   .log-box .entry.run { color: #fbbf24; }
   .log-box .entry.err { color: #f87171; }
+  .log-box .entry.race { color: #f472b6; }
 
-  /* 代码块 */
   pre { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 14px; margin-top: 20px; overflow-x: auto; font-family: "Consolas", monospace; font-size: 12px; line-height: 1.7; }
   .kw { color: #c084fc; } .str { color: #86efac; } .cmt { color: #64748b; font-style: italic; } .fn { color: #60a5fa; }
 
@@ -70,42 +57,54 @@
   .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
   .legend i.active { background: #a78bfa; }
   .legend i.done { background: #34d399; }
+  .legend i.early { background: #fbbf24; }
   .legend i.pending { background: #334155; }
+
+  .tip { background: #1e3a5f; border-left: 3px solid #60a5fa; padding: 10px 14px; border-radius: 6px; font-size: 12px; color: #93c5fd; margin-top: 14px; line-height: 1.8; }
 </style>
 </head>
 <body>
 
 <header>
   <h1>🥟 包饺子异步流程</h1>
-  <p>Promise + async/await · 串行 + 并行（Promise.all）</p>
+  <p>Promise.race（任一完成即可）+ Promise.all（全部完成才继续）+ async/await</p>
   <span class="author">邓嘉毅 · 24001010907</span>
 </header>
 
 <div class="wrap">
 
-  <!-- 流程图 -->
   <div class="flow" id="flow">
-    <div class="stage" data-id="buy">
-      <div class="icon">🛒</div>
-      <div class="info"><h3>① 买原料</h3><p>菜市场购买面粉、白菜、猪肉…</p></div>
-      <div class="timer" id="t-buy">6s</div>
+
+    <!-- ① 买原料（并行+race） -->
+    <div class="parallel race" data-label="线上线下同时买（Promise.race · 任一完成即可）">
+      <div class="stage" data-id="buy-online">
+        <div class="icon">📱</div>
+        <div class="info"><h3>①-a 线上买菜</h3><p>美团 / 京东到家</p></div>
+        <div class="timer" id="t-buy-online">8s</div>
+      </div>
+      <div class="stage" data-id="buy-offline">
+        <div class="icon">🏪</div>
+        <div class="info"><h3>①-b 线下超市</h3><p>步行到菜市场</p></div>
+        <div class="timer" id="t-buy-offline">6s</div>
+      </div>
     </div>
+
     <div class="stage" data-id="fetch">
       <div class="icon">🏠</div>
-      <div class="info"><h3>② 取原料（回家）</h3><p>把原料从市场取回家中</p></div>
+      <div class="info"><h3>② 取原料（回家）</h3><p>把买到的原料拿回家</p></div>
       <div class="timer" id="t-fetch">2s</div>
     </div>
 
-    <!-- 并行区 -->
-    <div class="parallel">
+    <!-- ③ 和面 和馅（并行+all） -->
+    <div class="parallel all" data-label="同时进行（Promise.all · 全部完成才继续）">
       <div class="stage" data-id="dough">
         <div class="icon">🍞</div>
-        <div class="info"><h3>③a 和面</h3><p>面粉加水揉成面团</p></div>
+        <div class="info"><h3>③-a 和面</h3><p>面粉加水揉成面团</p></div>
         <div class="timer" id="t-dough">4s</div>
       </div>
       <div class="stage" data-id="filling">
         <div class="icon">🥕</div>
-        <div class="info"><h3>③b 和馅</h3><p>白菜猪肉拌成馅</p></div>
+        <div class="info"><h3>③-b 和馅</h3><p>白菜猪肉拌成馅</p></div>
         <div class="timer" id="t-filling">5s</div>
       </div>
     </div>
@@ -115,6 +114,7 @@
       <div class="info"><h3>④ 包饺子</h3><p>擀皮、包馅、捏褶</p></div>
       <div class="timer" id="t-wrap">7s</div>
     </div>
+
     <div class="stage" data-id="eat">
       <div class="icon">😋</div>
       <div class="info"><h3>⑤ 吃饺子</h3><p>下锅煮熟，开吃！</p></div>
@@ -125,6 +125,7 @@
   <div class="legend">
     <span><i class="pending"></i> 等待中</span>
     <span><i class="active"></i> 进行中</span>
+    <span><i class="early"></i> 已完成但被等待</span>
     <span><i class="done"></i> 已完成</span>
   </div>
 
@@ -133,39 +134,40 @@
     <button class="btn reset" onclick="reset()">🔄 重置</button>
   </div>
 
+  <div class="tip">
+    💡 <b>Promise.race</b>：多个任务并行，谁先完成就用谁的结果，其他继续跑但被忽略。<br>
+    💡 <b>Promise.all</b>：所有任务必须全部完成，才继续下一步（最慢那个决定总耗时）。
+  </div>
+
   <div class="log-box" id="logBox"></div>
 
-  <!-- 代码示意 -->
-<pre><span class="cmt">// 每一步都是一个返回 Promise 的函数</span>
-<span class="kw">function</span> <span class="fn">step</span>(name, sec) {
-  <span class="kw">return new</span> Promise(resolve => {
-    setTimeout(() => resolve(name + <span class="str">" 完成"</span>), sec * <span class="num">1000</span>);
-  });
-}
+  <pre><span class="cmt">// Promise.race — 任一完成即可继续</span>
+<span class="kw">await</span> Promise.<span class="fn">race</span>([
+  <span class="fn">buyOnline</span>(<span class="num">8</span>),   <span class="cmt">// 线上 8s</span>
+  <span class="fn">buyOffline</span>(<span class="num">6</span>),  <span class="cmt">// 线下 6s ← 先完成！</span>
+]);
+<span class="cmt">// → 实际耗时 ≈ 6s，继续下一步</span>
 
-<span class="kw">async function</span> <span class="fn">makeDumplings</span>() {
-  <span class="kw">await</span> <span class="fn">step</span>(<span class="str">"买原料"</span>, <span class="num">6</span>);      <span class="cmt">// 串行</span>
-  <span class="kw">await</span> <span class="fn">step</span>(<span class="str">"取原料"</span>, <span class="num">2</span>);      <span class="cmt">// 串行</span>
-  <span class="kw">await</span> Promise.<span class="fn">all</span>([               <span class="cmt">// 并行！</span>
-    <span class="fn">step</span>(<span class="str">"和面"</span>, <span class="num">4</span>),
-    <span class="fn">step</span>(<span class="str">"和馅"</span>, <span class="num">5</span>),
-  ]);
-  <span class="kw">await</span> <span class="fn">step</span>(<span class="str">"包饺子"</span>, <span class="num">7</span>);
-  <span class="kw">await</span> <span class="fn">step</span>(<span class="str">"吃饺子"</span>, <span class="num">3</span>);
-}</pre>
+<span class="cmt">// Promise.all — 全部完成才继续</span>
+<span class="kw">await</span> Promise.<span class="fn">all</span>([
+  <span class="fn">和面</span>(<span class="num">4</span>),
+  <span class="fn">和馅</span>(<span class="num">5</span>),
+]);
+<span class="cmt">// → 实际耗时 ≈ 5s（取最慢）</span></pre>
 
 </div>
 
 <script>
-  const stages = ['buy','fetch','dough','filling','wrap','eat'];
-  const durations = { buy:6, fetch:2, dough:4, filling:5, wrap:7, eat:3 };
-  const names = { buy:'买原料', fetch:'取原料', dough:'和面', filling:'和馅', wrap:'包饺子', eat:'吃饺子' };
+  const allIds = ['buy-online','buy-offline','fetch','dough','filling','wrap','eat'];
+  const durations = { 'buy-online':8, 'buy-offline':6, fetch:2, dough:4, filling:5, wrap:7, eat:3 };
+  const names = { 'buy-online':'线上买菜', 'buy-offline':'线下超市', fetch:'取原料', dough:'和面', filling:'和馅', wrap:'包饺子', eat:'吃饺子' };
 
   let running = false;
 
   function setStage(id, state) {
     const el = document.querySelector(`.stage[data-id="${id}"]`);
-    el.classList.remove('active','done','error');
+    if (!el) return;
+    el.classList.remove('active','done','early','error');
     if (state) el.classList.add(state);
   }
 
@@ -178,7 +180,7 @@
       if (n <= 0) { clearInterval(iv); el.textContent = '✓'; return; }
       el.textContent = n + 's';
     }, 1000);
-    return () => clearInterval(iv);
+    return () => { clearInterval(iv); };
   }
 
   function log(msg, type) {
@@ -191,7 +193,8 @@
     box.scrollTop = box.scrollHeight;
   }
 
-  function stepPromise(id) {
+  function stagePromise(id, isEarly) {
+    // isEarly: 被 race 抢先完成时标记
     const sec = durations[id];
     return new Promise(resolve => {
       setStage(id, 'active');
@@ -199,9 +202,9 @@
       const stop = startTimer(id, sec);
       setTimeout(() => {
         stop();
-        setStage(id, 'done');
-        log(`✅ 完成：${names[id]}`, 'ok');
-        resolve();
+        setStage(id, isEarly ? 'early' : 'done');
+        log(`✅ 完成：${names[id]}`, isEarly ? 'race' : 'ok');
+        resolve(id);
       }, sec * 1000);
     });
   }
@@ -213,18 +216,36 @@
     const t0 = Date.now();
 
     try {
-      await stepPromise('buy');
-      await stepPromise('fetch');
+      // ========== ① Promise.race：线上线下同时买，任一完成即可 ==========
+      log('🏁 阶段①：线上 + 线下 同时买原料（Promise.race）', 'run');
+      const onlineP  = stagePromise('buy-online',  true);
+      const offlineP = stagePromise('buy-offline', false);  // 线下 6s 先到
+      const winner = await Promise.race([onlineP, offlineP]);
+      log(`⚡ race 胜出：${names[winner]}！另一路继续跑但不再等待`, 'race');
+      // 等另一路也自然结束，让 UI 完整
+      const loser = await (winner === 'buy-online' ? offlineP : onlineP);
+      setStage(loser, 'done');
 
-      log('⚡ 和面与和馅同时开始（Promise.all）', 'run');
-      await Promise.all([ stepPromise('dough'), stepPromise('filling') ]);
-      log('✨ 和面 + 和馅 都完成，继续下一步', 'ok');
+      // ========== ② 取原料（串行） ==========
+      await stagePromise('fetch', false);
 
-      await stepPromise('wrap');
-      await stepPromise('eat');
+      // ========== ③ Promise.all：和面 + 和馅 全部完成才继续 ==========
+      log('🏁 阶段③：和面 + 和馅 同时进行（Promise.all）', 'run');
+      await Promise.all([
+        stagePromise('dough',   false),
+        stagePromise('filling', false),
+      ]);
+      log('✨ 和面 + 和馅 都完成，继续包饺子', 'ok');
+
+      // ========== ④ 包饺子 ==========
+      await stagePromise('wrap', false);
+
+      // ========== ⑤ 吃饺子 ==========
+      await stagePromise('eat', false);
 
       const total = ((Date.now() - t0) / 1000).toFixed(1);
-      log(`🎉 全部完成！总耗时约 ${total}s（串行=27s，实际=6+2+5+7+3=${6+2+5+7+3}s，因并行省了 ${4+5-5}s）`, 'ok');
+      log(`🎉 全部完成！总耗时 ≈ ${total}s`, 'ok');
+      log(`   （理论：race=max(8,6)=6 + 2 + all=max(4,5)=5 + 7 + 3 = ${6+2+5+7+3}s）`, 'ok');
     } catch (e) {
       log('❌ 流程出错：' + e.message, 'err');
     }
@@ -233,9 +254,10 @@
   }
 
   function reset() {
-    stages.forEach(id => {
+    allIds.forEach(id => {
       setStage(id, '');
-      document.getElementById('t-' + id).textContent = durations[id] + 's';
+      const el = document.getElementById('t-' + id);
+      if (el) el.textContent = durations[id] + 's';
     });
     document.getElementById('logBox').innerHTML = '';
     running = false;
