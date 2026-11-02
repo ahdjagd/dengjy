@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTTP 请求测试工具 - 邓嘉毅 24001010907</title>
+<meta name="author" content="邓嘉毅 24001010907">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: #0f172a; color: #e2e8f0; min-height: 100vh; padding-bottom: 50px;
+  }
+  header {
+    text-align: center; padding: 32px 20px 20px;
+    background: linear-gradient(135deg, #1e293b, #0f172a); border-bottom: 3px solid #60a5fa;
+  }
+  header h1 { font-size: 28px; background: linear-gradient(90deg, #60a5fa, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  header p { color: #94a3b8; font-size: 13px; margin-top: 6px; }
+  .author { display: inline-block; margin-top: 10px; padding: 5px 16px; background: #60a5fa; color: #0f172a; border-radius: 20px; font-size: 12px; font-weight: bold; }
+
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+  .card {
+    background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 18px; margin-top: 20px;
+  }
+  .row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+  label { font-size: 13px; color: #94a3b8; display: block; margin-bottom: 4px; }
+  select, input, textarea {
+    background: #0f172a; color: #e2e8f0; border: 1px solid #334155; border-radius: 6px;
+    padding: 10px 12px; font-size: 13px; font-family: "Consolas", monospace;
+  }
+  select:focus, input:focus, textarea:focus { outline: none; border-color: #60a5fa; }
+  select { padding: 10px; font-weight: bold; min-width: 80px; }
+  input[type="text"], input[type="url"] { flex: 1; min-width: 200px; }
+  textarea { width: 100%; min-height: 110px; resize: vertical; margin-bottom: 10px; }
+
+  .btn {
+    padding: 10px 18px; background: linear-gradient(90deg, #60a5fa, #34d399);
+    color: #0f172a; border: none; border-radius: 8px; cursor: pointer;
+    font-weight: bold; font-size: 13px;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn.danger { background: #ef4444; color: #fff; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .resp-meta {
+    display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 10px;
+    font-size: 12px;
+  }
+  .badge {
+    padding: 3px 10px; border-radius: 12px; font-weight: bold; font-size: 12px;
+  }
+  .status-ok { background: #14532d; color: #86efac; }
+  .status-err { background: #7f1d1d; color: #fca5a5; }
+  .status-info { background: #1e3a5f; color: #93c5fd; }
+
+  pre {
+    background: #0f172a; border-radius: 8px; padding: 14px;
+    overflow-x: auto; font-family: "Consolas", monospace; font-size: 12px;
+    white-space: pre-wrap; word-break: break-all; max-height: 400px; overflow-y: auto;
+  }
+  .loading { color: #94a3b8; font-size: 13px; padding: 10px; }
+
+  .presets { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .preset {
+    padding: 4px 10px; background: #334155; border: none; border-radius: 14px;
+    color: #94a3b8; font-size: 11px; cursor: pointer;
+  }
+  .preset:hover { color: #60a5fa; background: #1e3a5f; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🔬 HTTP 请求测试工具</h1>
+  <p>支持 GET / POST / PUT / DELETE · 实时显示响应和错误</p>
+  <span class="author">邓嘉毅 · 24001010907</span>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <div class="row">
+      <select id="method">
+        <option>GET</option>
+        <option>POST</option>
+        <option>PUT</option>
+        <option>PATCH</option>
+        <option>DELETE</option>
+      </select>
+      <input id="url" type="url" value="https://jsonplaceholder.typicode.com/posts">
+      <button class="btn" onclick="send()">▶ 发送</button>
+      <button class="btn danger" onclick="clearAll()">🗑 清空</button>
+    </div>
+    <label>常用接口（点击填入）：</label>
+    <div class="presets">
+      <button class="preset" onclick="fill('GET','https://jsonplaceholder.typicode.com/posts')">GET posts</button>
+      <button class="preset" onclick="fill('POST','https://jsonplaceholder.typicode.com/posts')">POST posts</button>
+      <button class="preset" onclick="fill('GET','https://jsonplaceholder.typicode.com/users')">GET users</button>
+      <button class="preset" onclick="fill('GET','https://dummyjson.com/products/1')">GET product</button>
+      <button class="preset" onclick="fill('GET','https://api.github.com/users/ahdjagd')">GitHub user</button>
+    </div>
+    <label id="bodyLabel" style="display:none; margin-top:14px;">请求体（JSON 格式）：</label>
+    <textarea id="body" style="display:none;" placeholder='{"title":"hello","body":"world","userId":1}'>
+{
+  "title": "foo",
+  "body": "bar",
+  "userId": 1
+}</textarea>
+  </div>
+
+  <div class="card">
+    <div class="resp-meta" id="metaBar"></div>
+    <div id="respBox"><div class="loading">等待请求...</div></div>
+  </div>
+</div>
+
+<script>
+  const methodSel = document.getElementById('method');
+  const bodyBox = document.getElementById('body');
+  const bodyLabel = document.getElementById('bodyLabel');
+  methodSel.addEventListener('change', () => {
+    const m = methodSel.value;
+    if (m === 'GET' || m === 'DELETE') { bodyBox.style.display = 'none'; bodyLabel.style.display = 'none'; }
+    else { bodyBox.style.display = 'block'; bodyLabel.style.display = 'block'; }
+  });
+
+  function fill(m, u) {
+    methodSel.value = m;
+    document.getElementById('url').value = u;
+    methodSel.dispatchEvent(new Event('change'));
+  }
+
+  async function send() {
+    const method = methodSel.value;
+    const url = document.getElementById('url').value.trim();
+    const metaBar = document.getElementById('metaBar');
+    const respBox = document.getElementById('respBox');
+    if (!url) { alert('请输入 URL'); return; }
+
+    respBox.innerHTML = '<div class="loading">请求中...</div>';
+    metaBar.innerHTML = '';
+    const t0 = Date.now();
+
+    try {
+      const opts = { method, headers: { 'Content-Type': 'application/json' } };
+      if (method !== 'GET' && method !== 'DELETE') {
+        try { opts.body = JSON.stringify(JSON.parse(bodyBox.value)); }
+        catch (e) { throw new Error('请求体不是合法 JSON：' + e.message); }
+      }
+      const res = await fetch(url, opts);
+      const ms = Date.now() - t0;
+
+      let text = await res.text();
+      let pretty = text;
+      try { pretty = JSON.stringify(JSON.parse(text), null, 2); } catch (_) {}
+
+      const ok = res.ok;
+      metaBar.innerHTML = `
+        <span class="badge ${ok ? 'status-ok' : 'status-err'}">HTTP ${res.status} ${res.statusText}</span>
+        <span class="badge status-info">⏱ ${ms}ms</span>
+        <span class="badge status-info">📏 ${text.length} 字节</span>
+        <span class="badge status-info">📡 ${res.headers.get('content-type') || 'unknown'}</span>
+      `;
+      respBox.innerHTML = `<pre>${escapeHtml(pretty)}</pre>`;
+    } catch (e) {
+      const ms = Date.now() - t0;
+      metaBar.innerHTML = `<span class="badge status-err">❌ 网络错误</span><span class="badge status-info">⏱ ${ms}ms</span>`;
+      respBox.innerHTML = `<pre style="color:#f87171;">${escapeHtml(e.message + '\n\n可能原因：\n1. URL 拼写错误\n2. CORS 跨域被拒绝\n3. 网络不可达\n4. 接口不存在')}</pre>`;
+    }
+  }
+
+  function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  function clearAll() {
+    document.getElementById('metaBar').innerHTML = '';
+    document.getElementById('respBox').innerHTML = '<div class="loading">等待请求...</div>';
+  }
+
+  // 回车快捷发送
+  document.getElementById('url').addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+</script>
+
+</body>
+</html>
