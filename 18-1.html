@@ -34,35 +34,40 @@
   const ctx = cv.getContext('2d');
   const W = cv.width, H = cv.height;
 
-  // 1. 离屏 canvas 绘制文字，采样像素得到粒子目标点
-  const off = document.createElement('canvas');
-  off.width = W; off.height = H;
-  const octx = off.getContext('2d');
-  octx.font = 'bold 200px "Microsoft YaHei"';
-  octx.textAlign = 'center';
-  octx.textBaseline = 'middle';
-  octx.fillStyle = '#fff';
-  octx.fillText(TEXT, W / 2, H / 2);
-  const imgData = octx.getImageData(0, 0, W, H).data;
+  const COLORS = ['#22d3ee', '#a78bfa', '#f472b6', '#fbbf24', '#34d399'];
 
-  const targets = [];
-  const gap = 5;
-  for (let y = 0; y < H; y += gap) {
-    for (let x = 0; x < W; x += gap) {
-      if (imgData[(y * W + x) * 4 + 3] > 128) targets.push({ x, y });
+  function sampleTargets() {
+    // 离屏 canvas 绘制文字，采样像素得到粒子目标点
+    const off = document.createElement('canvas');
+    off.width = W; off.height = H;
+    const octx = off.getContext('2d');
+    octx.font = 'bold 200px "Microsoft YaHei", "SimHei", sans-serif';
+    octx.textAlign = 'center';
+    octx.textBaseline = 'middle';
+    octx.fillStyle = '#fff';
+    octx.fillText(TEXT, W / 2, H / 2);
+    const imgData = octx.getImageData(0, 0, W, H).data;
+
+    const targets = [];
+    const gap = 5;
+    for (let y = 0; y < H; y += gap) {
+      for (let x = 0; x < W; x += gap) {
+        if (imgData[(y * W + x) * 4 + 3] > 128) targets.push({ x, y });
+      }
     }
+    return targets;
   }
 
-  // 2. 粒子
-  const COLORS = ['#22d3ee', '#a78bfa', '#f472b6', '#fbbf24', '#34d399'];
-  const particles = targets.map(t => ({
-    x: Math.random() * W,
-    y: Math.random() * H,
-    tx: t.x, ty: t.y,
-    vx: 0, vy: 0,
-    r: 1.6 + Math.random() * 1.4,
-    color: colors[Math.floor(Math.random() * colors.length)]
-  }));
+  function start(targets) {
+    // 粒子
+    const particles = targets.map(t => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      tx: t.x, ty: t.y,
+      vx: 0, vy: 0,
+      r: 1.6 + Math.random() * 1.4,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)]
+    }));
 
   const mouse = { x: -9999, y: -9999 };
   cv.addEventListener('mousemove', e => {
@@ -99,6 +104,24 @@
     requestAnimationFrame(tick);
   }
   tick();
+  } // end start()
+
+  // 等字体加载完成再采样，否则离屏 canvas 画不出中文
+  document.fonts.ready.then(() => {
+    let targets = sampleTargets();
+    if (targets.length === 0) {
+      // 兜底：再绘制一次（字体可能刚就绪）
+      targets = sampleTargets();
+    }
+    if (targets.length === 0) {
+      // 终极兜底：字体不可用时直接用圆点排成文字，保证能看到字
+      const hint = document.createElement('div');
+      hint.textContent = '（字体未就绪，使用降级方案）';
+      hint.style.cssText = 'color:#fbbf24;font-size:12px;text-align:center;margin-bottom:10px;';
+      document.querySelector('.stage').insertBefore(hint, cv);
+    }
+    start(targets);
+  });
 </script>
 
 </body>
