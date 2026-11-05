@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ECharts 图表演示 - 邓嘉毅 24001010907</title>
+<title>ECharts 渐变折线图 - 邓嘉毅 24001010907</title>
 <meta name="author" content="邓嘉毅 24001010907">
 <script src="./cdn/echarts.min.js"></script>
 <style>
@@ -13,48 +13,75 @@
   header h1 { font-size: 26px; background: linear-gradient(90deg, #fbbf24, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   header p { color: #94a3b8; font-size: 13px; margin-top: 6px; }
   .author { display: inline-block; margin-top: 10px; padding: 5px 16px; background: #fbbf24; color: #0f172a; border-radius: 20px; font-size: 12px; font-weight: bold; }
-  .grid { max-width: 1100px; margin: 24px auto 40px; padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
-  .panel { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; }
+  .wrap { max-width: 1100px; margin: 24px auto 40px; padding: 0 20px; display: flex; flex-direction: column; gap: 20px; }
+  .panel { background: #fff; border: 1px solid #334155; border-radius: 12px; padding: 16px; }
   .panel h2 { font-size: 16px; color: #fbbf24; margin-bottom: 10px; }
-  .chart { width: 100%; height: 380px; }
+  .chart { width: 100%; height: 520px; }
+  .chart.small { height: 380px; }
+  .src { max-width: 1100px; margin: -14px auto 30px; padding: 0 20px; font-size: 12px; color: #64748b; }
+  .src a { color: #22d3ee; }
 </style>
 </head>
 <body>
 
 <header>
   <h1>📊 ECharts 图表演示</h1>
-  <p>柱状图 + 饼图 · echarts 通过本地 cdn/echarts.min.js 引入</p>
+  <p>渐变折线图（y 轴 / x 轴）+ 饼图 · echarts 本地引用 ./cdn/echarts.min.js</p>
   <span class="author">邓嘉毅 · 24001010907</span>
 </header>
 
-<div class="grid">
+<div class="wrap">
   <div class="panel">
-    <h2>📈 柱状图：一周各品类销售额</h2>
-    <div id="barChart" class="chart"></div>
+    <h2>📈 图 1：折线渐变图（上：沿 y 轴渐变，下：沿 x 轴渐变）</h2>
+    <div id="main" class="chart"></div>
   </div>
-  <div class="panel">
-    <h2>🥧 饼图：流量来源占比</h2>
-    <div id="pieChart" class="chart"></div>
+  <div class="panel" style="background:#1e293b;">
+    <h2>🥧 图 2：流量来源占比</h2>
+    <div id="pieChart" class="chart small"></div>
   </div>
 </div>
+<p class="src">示例来源：<a href="https://echarts.apache.org/examples/zh/editor.html?c=line-gradient" target="_blank">echarts.apache.org/examples/zh/editor.html?c=line-gradient</a></p>
 
 <script>
-  // 图 1：柱状图
-  const bar = echarts.init(document.getElementById('barChart'), 'dark');
-  bar.setOption({
-    backgroundColor: 'transparent',
-    tooltip: { trigger: 'axis' },
-    legend: { data: ['线上销售', '线下销售'], textStyle: { color: '#cbd5e1' } },
-    xAxis: { type: 'category', data: ['周一','周二','周三','周四','周五','周六','周日'] },
-    yAxis: { type: 'value', name: '万元' },
-    series: [
-      { name: '线上销售', type: 'bar', data: [12, 20, 15, 8, 22, 30, 28], itemStyle: { color: '#22d3ee', borderRadius: [6,6,0,0] } },
-      { name: '线下销售', type: 'bar', data: [8, 12, 10, 6, 14, 20, 18], itemStyle: { color: '#a78bfa', borderRadius: [6,6,0,0] } }
-    ]
-  });
+  // ============ 图 1：官网示例 Gradient Line ============
+  var chartDom = document.getElementById('main');
+  var myChart = echarts.init(chartDom);
+  var option;
 
-  // 图 2：饼图
+  // prettier-ignore
+  const data = [["2000-06-05", 116], ["2000-06-06", 129], ["2000-06-07", 135], ["2000-06-08", 86], ["2000-06-09", 73], ["2000-06-10", 85], ["2000-06-11", 73], ["2000-06-12", 68], ["2000-06-13", 92], ["2000-06-14", 130], ["2000-06-15", 245], ["2000-06-16", 139], ["2000-06-17", 115], ["2000-06-18", 111], ["2000-06-19", 309], ["2000-06-20", 206], ["2000-06-21", 137], ["2000-06-22", 128], ["2000-06-23", 85], ["2000-06-24", 94], ["2000-06-25", 71], ["2000-06-26", 106], ["2000-06-27", 84], ["2000-06-28", 93], ["2000-06-29", 85], ["2000-06-30", 73], ["2000-07-01", 83], ["2000-07-02", 125], ["2000-07-03", 107], ["2000-07-04", 82], ["2000-07-05", 44], ["2000-07-06", 72], ["2000-07-07", 106], ["2000-07-08", 107], ["2000-07-09", 66], ["2000-07-10", 91], ["2000-07-11", 92], ["2000-07-12", 113], ["2000-07-13", 107], ["2000-07-14", 131], ["2000-07-15", 111], ["2000-07-16", 64], ["2000-07-17", 69], ["2000-07-18", 88], ["2000-07-19", 77], ["2000-07-20", 83], ["2000-07-21", 111], ["2000-07-22", 57], ["2000-07-23", 55], ["2000-07-24", 60]];
+  const dateList = data.map(function (item) { return item[0]; });
+  const valueList = data.map(function (item) { return item[1]; });
+  option = {
+    visualMap: [
+      { show: false, type: 'continuous', seriesIndex: 0, min: 0, max: 400 },
+      { show: false, type: 'continuous', seriesIndex: 1, dimension: 0, min: 0, max: dateList.length - 1 }
+    ],
+    title: [
+      { left: 'center', text: 'Gradient along the y axis' },
+      { top: '55%', left: 'center', text: 'Gradient along the x axis' }
+    ],
+    tooltip: { trigger: 'axis' },
+    xAxis: [
+      { data: dateList },
+      { data: dateList, gridIndex: 1 }
+    ],
+    yAxis: [
+      {},
+      { gridIndex: 1 }
+    ],
+    grid: [
+      { bottom: '60%' },
+      { top: '60%' }
+    ],
+    series: [
+      { type: 'line', showSymbol: false, data: valueList },
+      { type: 'line', showSymbol: false, data: valueList, xAxisIndex: 1, yAxisIndex: 1 }
+    ]
+  };
+  option && myChart.setOption(option);
+
+  // ============ 图 2：饼图 ============
   const pie = echarts.init(document.getElementById('pieChart'), 'dark');
   pie.setOption({
     backgroundColor: 'transparent',
@@ -74,7 +101,7 @@
     }]
   });
 
-  window.addEventListener('resize', () => { bar.resize(); pie.resize(); });
+  window.addEventListener('resize', () => { myChart.resize(); pie.resize(); });
 </script>
 
 </body>
