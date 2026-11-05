@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Three.js 三维图表演示 - 邓嘉毅 24001010907</title>
+<meta name="author" content="邓嘉毅 24001010907">
+<script src="./cdn/three.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "Microsoft YaHei", sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+  header { text-align: center; padding: 28px 20px 18px; border-bottom: 3px solid #a78bfa; background: linear-gradient(135deg, #1e293b, #0f172a); }
+  header h1 { font-size: 26px; background: linear-gradient(90deg, #a78bfa, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  header p { color: #94a3b8; font-size: 13px; margin-top: 6px; }
+  .author { display: inline-block; margin-top: 10px; padding: 5px 16px; background: #a78bfa; color: #0f172a; border-radius: 20px; font-size: 12px; font-weight: bold; }
+  .grid { max-width: 1200px; margin: 24px auto 40px; padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .panel { background: #1e293b; border: 1px solid #334155; border-radius: 12px; overflow: hidden; }
+  .panel h2 { font-size: 16px; color: #a78bfa; padding: 14px 16px 6px; }
+  .panel .sub { font-size: 12px; color: #64748b; padding: 0 16px 10px; }
+  .three-canvas { width: 100%; height: 420px; display: block; background: #020617; cursor: grab; }
+  .three-canvas:active { cursor: grabbing; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌐 Three.js 三维图表演示</h1>
+  <p>图 1：旋转着色几何体 · 图 2：粒子星空（均用本地 cdn/three.min.js）</p>
+  <span class="author">邓嘉毅 · 24001010907</span>
+</header>
+
+<div class="grid">
+  <div class="panel">
+    <h2>🔺 图 1：彩色 Torus Knot（拖动可旋转视角）</h2>
+    <p class="sub">MeshLambertMaterial + 点光源 + 环境光，鼠标拖动改变视角</p>
+    <canvas class="three-canvas" id="c1"></canvas>
+  </div>
+  <div class="panel">
+    <h2>✨ 图 2：10000 粒子星空（旋转 + 深度感）</h2>
+    <p class="sub">Points + PointsMaterial，随帧数缓慢自转模拟宇宙</p>
+    <canvas class="three-canvas" id="c2"></canvas>
+  </div>
+</div>
+
+<script>
+// ============ 图 1：Torus Knot ============
+(function() {
+  const canvas = document.getElementById('c1');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x020617);
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+  camera.position.set(0, 0, 6);
+
+  const geo = new THREE.TorusKnotGeometry(1.5, 0.5, 128, 32);
+  const mat = new THREE.MeshLambertMaterial({ color: 0xa78bfa, emissive: 0x220044 });
+  const mesh = new THREE.Mesh(geo, mat);
+  scene.add(mesh);
+
+  scene.add(new THREE.AmbientLight(0x404040, 2));
+  const light = new THREE.PointLight(0xffffff, 2, 100);
+  light.position.set(5, 5, 5);
+  scene.add(light);
+
+  let rotX = 0, rotY = 0, isDown = false, px = 0, py = 0;
+  canvas.addEventListener('pointerdown', e => { isDown = true; px = e.clientX; py = e.clientY; });
+  window.addEventListener('pointerup', () => isDown = false);
+  window.addEventListener('pointermove', e => {
+    if (!isDown) return;
+    rotY += (e.clientX - px) * 0.01;
+    rotX += (e.clientY - py) * 0.01;
+    px = e.clientX; py = e.clientY;
+  });
+
+  function resize() {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+  }
+  resize(); window.addEventListener('resize', resize);
+
+  function tick() {
+    mesh.rotation.x = rotX + performance.now() * 0.0003;
+    mesh.rotation.y = rotY + performance.now() * 0.0005;
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+// ============ 图 2：粒子星空 ============
+(function() {
+  const canvas = document.getElementById('c2');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x000010);
+  const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 2000);
+  camera.position.z = 500;
+
+  const N = 10000;
+  const positions = new Float32Array(N * 3);
+  const colors = new Float32Array(N * 3);
+  const palette = [new THREE.Color(0xa78bfa), new THREE.Color(0x22d3ee), new THREE.Color(0xf472b6), new THREE.Color(0xfbbf24), new THREE.Color(0xffffff)];
+  for (let i = 0; i < N; i++) {
+    const r = 300 + Math.random() * 500;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    positions[i*3]   = r * Math.sin(phi) * Math.cos(theta);
+    positions[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+    positions[i*3+2] = r * Math.cos(phi);
+    const c = palette[Math.floor(Math.random() * palette.length)];
+    colors[i*3] = c.r; colors[i*3+1] = c.g; colors[i*3+2] = c.b;
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  const mat = new THREE.PointsMaterial({ size: 2, vertexColors: true, transparent: true, opacity: 0.9 });
+  const points = new THREE.Points(geo, mat);
+  scene.add(points);
+
+  function resize() {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+  }
+  resize(); window.addEventListener('resize', resize);
+
+  function tick() {
+    points.rotation.y = performance.now() * 0.00005;
+    points.rotation.x = Math.sin(performance.now() * 0.0001) * 0.1;
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+</script>
+
+</body>
+</html>

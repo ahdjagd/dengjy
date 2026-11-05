@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mermaid 智能客服流程图与 ER 图 - 邓嘉毅 24001010907</title>
+<meta name="author" content="邓嘉毅 24001010907">
+<script src="./cdn/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'dark', flowchart: { curve: 'basis' } });</script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "Microsoft YaHei", sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+  header { text-align: center; padding: 28px 20px 18px; border-bottom: 3px solid #34d399; background: linear-gradient(135deg, #1e293b, #0f172a); }
+  header h1 { font-size: 26px; background: linear-gradient(90deg, #34d399, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  header p { color: #94a3b8; font-size: 13px; margin-top: 6px; }
+  .author { display: inline-block; margin-top: 10px; padding: 5px 16px; background: #34d399; color: #0f172a; border-radius: 20px; font-size: 12px; font-weight: bold; }
+  .wrap { max-width: 1100px; margin: 24px auto 40px; padding: 0 20px; display: flex; flex-direction: column; gap: 24px; }
+  .panel { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 18px; }
+  .panel h2 { font-size: 18px; color: #34d399; margin-bottom: 14px; }
+  .panel .sub { font-size: 12px; color: #64748b; margin-bottom: 14px; }
+  .mermaid { background: #0f172a; border-radius: 10px; padding: 20px; display: flex; justify-content: center; overflow-x: auto; }
+  .mermaid svg { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🧩 Mermaid 智能客服系统</h1>
+  <p>流程图（用户咨询处理流程）+ ER 图（数据库表关系）</p>
+  <span class="author">邓嘉毅 · 24001010907</span>
+</header>
+
+<div class="wrap">
+
+  <!-- 流程图 -->
+  <div class="panel">
+    <h2>📋 图 1：用户咨询处理流程图</h2>
+    <p class="sub">用户提问 → 意图识别 → 知识检索 → LLM 生成 → 安全过滤 → 输出（或转人工）</p>
+    <div class="mermaid">
+flowchart TD
+    A([用户发起咨询]) --> B[接收消息]
+    B --> C{意图识别}
+    C -->|常见问题| D[FAQ 直接匹配]
+    C -->|复杂问题| E[向量库 RAG 检索]
+    C -->|转人工| F[分配人工客服]
+    D --> G{是否命中}
+    G -->|是| H[返回标准问答]
+    G -->|否| E
+    E --> I[召回 Top-K 知识片段]
+    I --> J[组装 Prompt + 历史上下文]
+    J --> K[调用 LLM 大模型生成回答]
+    K --> L[敏感词 & 安全过滤]
+    L --> M{置信度达标?}
+    M -->|是| N[流式返回回答给用户]
+    M -->|否| F
+    H --> N
+    F --> O[人工客服接管会话]
+    N --> P([记录会话日志])
+    O --> P
+    P --> Q([badcase 回流知识库])
+    </div>
+  </div>
+
+  <!-- ER 图 -->
+  <div class="panel">
+    <h2>🗄 图 2：智能客服系统 ER 图</h2>
+    <p class="sub">用户 / 会话 / 消息 / 知识库 / 文档切片 / 工单 / 评价 之间的关系</p>
+    <div class="mermaid">
+erDiagram
+    USER ||--o{ SESSION : "发起"
+    SESSION ||--o{ MESSAGE : "包含"
+    SESSION ||--o| TICKET : "升级为"
+    USER ||--o{ EVALUATION : "提交"
+    MESSAGE ||--o{ EVALUATION : "被评"
+    KNOWLEDGE_BASE ||--o{ DOC_CHUNK : "切片"
+    KNOWLEDGE_BASE ||--o{ KNOWLEDGE_CATEGORY : "分类"
+    MESSAGE }o--|| DOC_CHUNK : "引用"
+    CUSTOMER_SERVICE ||--o{ TICKET : "处理"
+
+    USER {
+        bigint id PK
+        string username
+        string phone
+        string email
+        datetime created_at
+    }
+    SESSION {
+        bigint id PK
+        bigint user_id FK
+        string status
+        datetime started_at
+        datetime ended_at
+    }
+    MESSAGE {
+        bigint id PK
+        bigint session_id FK
+        varchar role
+        text content
+        decimal confidence
+        datetime created_at
+    }
+    TICKET {
+        bigint id PK
+        bigint session_id FK
+        bigint cs_id FK
+        string priority
+        string state
+    }
+    KNOWLEDGE_BASE {
+        bigint id PK
+        string title
+        string source_type
+        datetime updated_at
+    }
+    DOC_CHUNK {
+        bigint id PK
+        bigint kb_id FK
+        text content
+        vector embedding
+        int chunk_idx
+    }
+    KNOWLEDGE_CATEGORY {
+        bigint id PK
+        bigint kb_id FK
+        string name
+    }
+    CUSTOMER_SERVICE {
+        bigint id PK
+        string name
+        string skill_group
+    }
+    EVALUATION {
+        bigint id PK
+        bigint user_id FK
+        bigint message_id FK
+        tinyint score
+        text comment
+    }
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
